@@ -6,8 +6,7 @@ using UnityEngine.Rendering.HighDefinition;
 [ExecuteAlways]
 public class TrackPhotoRig : MonoBehaviour
 {
-
-    #region 兩組鏡頭功能
+    #region Zoom Lenses
     public bool smoothZoom = true;
     public float zoomLerp = 12f;
     public KeyCode lensAKey = KeyCode.Alpha1;
@@ -15,8 +14,9 @@ public class TrackPhotoRig : MonoBehaviour
 
     ZoomLens currentLens;
     float targetFocal;
-    LensDistortion lensDist;  // 需在 Volume 裡加 Lens Distortion
+    LensDistortion lensDist;
     Vignette lensVig;
+
     [System.Serializable]
     public class ZoomLens
     {
@@ -27,45 +27,33 @@ public class TrackPhotoRig : MonoBehaviour
         public float minF_atMinFocal = 2.8f;
         public float minF_atMaxFocal = 4.0f;
         public float zoomStep = 2f;
-
-        // 鏡頭味道對應焦段的插值
         public float distortionAtMin = 0.10f;
         public float distortionAtMax = 0.00f;
         public float vignetteAtMin = 0.12f;
         public float vignetteAtMax = 0.20f;
     }
+
     [Header("Lens System")]
     public ZoomLens lensA = new ZoomLens
     {
         name = "24-70",
-        minFocal = 24f,
-        maxFocal = 70f,
-        defaultFocal = 35f,
-        minF_atMinFocal = 2.8f,
-        minF_atMaxFocal = 4.0f,
-        distortionAtMin = 0.12f,
-        distortionAtMax = 0.02f,
-        vignetteAtMin = 0.10f,
-        vignetteAtMax = 0.18f,
+        minFocal = 24f,  maxFocal = 70f,  defaultFocal = 35f,
+        minF_atMinFocal = 2.8f, minF_atMaxFocal = 4.0f,
+        distortionAtMin = 0.12f, distortionAtMax = 0.02f,
+        vignetteAtMin = 0.10f,   vignetteAtMax = 0.18f,
         zoomStep = 2f
     };
 
     public ZoomLens lensB = new ZoomLens
     {
         name = "100-400",
-        minFocal = 100f,
-        maxFocal = 400f,
-        defaultFocal = 200f,
-        minF_atMinFocal = 4.5f,
-        minF_atMaxFocal = 6.3f,
-        distortionAtMin = 0.02f,
-        distortionAtMax = 0.00f,
-        vignetteAtMin = 0.18f,
-        vignetteAtMax = 0.25f,
+        minFocal = 100f, maxFocal = 400f, defaultFocal = 200f,
+        minF_atMinFocal = 4.5f, minF_atMaxFocal = 6.3f,
+        distortionAtMin = 0.02f, distortionAtMax = 0.00f,
+        vignetteAtMin = 0.18f,   vignetteAtMax = 0.25f,
         zoomStep = 5f
     };
     #endregion
-
 
     [Header("Refs")]
     public Camera cam;
@@ -109,7 +97,6 @@ public class TrackPhotoRig : MonoBehaviour
     public enum NDMode { ReduceLightOnly, KeepExposureByISO }
     public NDMode ndMode = NDMode.KeepExposureByISO;
 
-    
     public enum Drive { Single, ContinuousLow, ContinuousHigh, Custom }
     [Header("Drive Mode")]
     public Drive driveMode = Drive.ContinuousLow;
@@ -117,7 +104,7 @@ public class TrackPhotoRig : MonoBehaviour
     public float contHighFPS = 15f;
     public float customFPS = 8f;
     public float blackoutSec = 0.05f;
-    public int burstLimit = 0; // 0 表無上限
+    public int burstLimit = 0;
     public bool HoldShutter = false;
     public Action<int> OnShutter;
 
@@ -137,13 +124,13 @@ public class TrackPhotoRig : MonoBehaviour
     public float shakePosCm = 0.2f;
     public float shakeLowHz = 1.2f;
     public float shakeHighHz = 7f;
-    public float shakeFocalAmplify = 0.015f; // 焦段越長放大越明顯
+    public float shakeFocalAmplify = 0.015f;
     public bool shakeOnlyWhenPanning = false;
 
     [Header("Rolling Shutter Approx")]
     public bool rollingShutterApprox = false;
-    public float readoutMs = 18f;  // 全幅 CMOS 約 10–20ms
-    public float shearScale = 1.0f; // 乘上角速度*讀出時間的係數
+    public float readoutMs = 18f;
+    public float shearScale = 1.0f;
     public bool verticalReadoutTopToBottom = true;
 
     Exposure exposure;
@@ -167,7 +154,7 @@ public class TrackPhotoRig : MonoBehaviour
     Matrix4x4 origProj;
     bool haveOrigProj = false;
     Vector3 lastCamEuler;
-    Vector3 camAngVel; // deg/s
+    Vector3 camAngVel;
 
     void OnEnable()
     {
@@ -176,7 +163,7 @@ public class TrackPhotoRig : MonoBehaviour
         FetchOverrides();
         InitPhysicalCamera();
         if (!mainLight) mainLight = RenderSettings.sun;
-        if (currentISO < isoMin) currentISO = Mathf.Clamp(400, isoMin, isoMax);
+        if (currentISO < isoMin) currentISO = Mathf.Clamp(400, Mathf.Max(50, isoMin), isoMax);
         hadLastPos = false;
         shakeSeed = UnityEngine.Random.value * 1000f;
         baseRot = transform.rotation;
@@ -211,14 +198,10 @@ public class TrackPhotoRig : MonoBehaviour
         cam.usePhysicalProperties = true;
         cam.sensorSize = new Vector2(sensorWidthMm, sensorHeightMm);
         cam.focalLength = focalLengthMm;
-        if (hdCam != null)
-        {
-            var p = hdCam.physicalParameters;
-            p.aperture = apertureF;
-            p.shutterSpeed = shutterSpeedSec;
-            p.iso = Mathf.Clamp(currentISO, isoMin, isoMax);
-            hdCam.physicalParameters = p;
-        }
+        cam.aperture = apertureF;
+        cam.shutterSpeed = shutterSpeedSec;
+        cam.iso = Mathf.Clamp(currentISO, Mathf.Max(50, isoMin), isoMax);
+        cam.focusDistance = Mathf.Max(0.01f, focusDistanceM);
     }
 
     void EnsureFrameSettings()
@@ -226,15 +209,12 @@ public class TrackPhotoRig : MonoBehaviour
         if (hdCam == null) return;
 
         hdCam.customRenderingSettings = true;
-
         var fs = hdCam.renderingPathCustomFrameSettings;
 
-        // 物件與相機的 Motion Vectors
         fs.SetEnabled(FrameSettingsField.MotionVectors, true);
         fs.SetEnabled(FrameSettingsField.ObjectMotionVectors, true);
         fs.SetEnabled(FrameSettingsField.TransparentsWriteMotionVector, true);
 
-        // 基本渲染與後處理
         fs.SetEnabled(FrameSettingsField.OpaqueObjects, true);
         fs.SetEnabled(FrameSettingsField.TransparentObjects, true);
         fs.SetEnabled(FrameSettingsField.Postprocess, true);
@@ -266,8 +246,7 @@ public class TrackPhotoRig : MonoBehaviour
 
     void UpdateAF()
     {
-        if (!afContinuous || subject == null || cam == null)
-            return;
+        if (!afContinuous || subject == null || cam == null) return;
 
         Vector3 sPos = subject.position;
         if (hadLastPos)
@@ -330,68 +309,67 @@ public class TrackPhotoRig : MonoBehaviour
         transform.position = basePos + pos;
     }
 
-    float Perlin(float x, float salt)
-    {
-        return Mathf.PerlinNoise(x + shakeSeed, salt);
-    }
+    float Perlin(float x, float salt) => Mathf.PerlinNoise(x + shakeSeed, salt);
 
     void UpdateExposureAndND()
     {
-        if (hdCam == null) return;
+        if (cam == null) return;
 
         float ev100 = ev100Manual;
         if (meterFromMainLight)
         {
             Light l = mainLight ? mainLight : RenderSettings.sun;
-            float lux = 0f;
-            if (l != null) lux = Mathf.Max(0f, l.intensity * 10000f);
+            float lux = (l != null) ? Mathf.Max(0f, l.intensity) : 0f; // 不要 *10000
             ev100 = luxToEV100.Evaluate(lux);
         }
 
-        float ndEV = ndStops;
-        float targetEV = ev100 + exposureCompEV - ndEV;
+        // 2) 目標 EV：一律以場景 EV 為基準，不把 ND 放進 targetEV
+        float targetEV = ev100;
 
+        // 3) 由光圈/快門推算 ISO（注意正號）
         float baseEV = Mathf.Log((apertureF * apertureF) / Mathf.Max(shutterSpeedSec, 1e-6f), 2f);
         float isoScaleEV = baseEV - targetEV;
-        int isoNeeded = Mathf.Clamp(Mathf.RoundToInt(100f * Mathf.Pow(2f, -isoScaleEV)), isoMin, isoMax);
+        int isoNeeded = Mathf.RoundToInt(100f * Mathf.Pow(2f, isoScaleEV));
 
-        if (!shutterPriority) isoNeeded = Mathf.Clamp(currentISO, isoMin, isoMax);
+        // 4) 只有 KeepExposureByISO 時，用 ISO 抵消 ND
         if (ndMode == NDMode.KeepExposureByISO)
-            isoNeeded = Mathf.Clamp(Mathf.RoundToInt(isoNeeded * Mathf.Pow(2f, ndStops)), isoMin, isoMax);
+            isoNeeded = Mathf.RoundToInt(isoNeeded * Mathf.Pow(2f, ndStops));
 
+
+        // 5) 夾範圍與平滑
+        isoNeeded = Mathf.Clamp(isoNeeded, Mathf.Max(50, isoMin), isoMax);
+        if (!shutterPriority) isoNeeded = Mathf.Clamp(currentISO, Mathf.Max(50, isoMin), isoMax);
         currentISO = Mathf.RoundToInt(Mathf.Lerp(currentISO, isoNeeded, 1f - meterWeight));
 
-        var p = hdCam.physicalParameters;
-        p.aperture = apertureF;
-        p.shutterSpeed = shutterSpeedSec;
-        p.iso = currentISO;
-        hdCam.physicalParameters = p;
 
+        // 6) 寫回 Camera
+        cam.usePhysicalProperties = true;
+        cam.aperture = apertureF;
+        cam.shutterSpeed = shutterSpeedSec;
+        cam.iso = Mathf.Clamp(currentISO, Mathf.Max(50, isoMin), isoMax);
+
+        // 7) 後處理曝光：把 ND 變成「負補償」
         if (exposure != null)
         {
             exposure.active = true;
             exposure.mode.value = ExposureMode.UsePhysicalCamera;
-            float comp = (ndMode == NDMode.ReduceLightOnly) ? -ndStops + exposureCompEV : exposureCompEV;
-            exposure.compensation.value = comp;
+
+            float postComp = exposureCompEV; // 使用者補償
+            postComp -= ndStops;             // ND 真正減光在這裡生效
+
+            exposure.compensation.value = postComp;
         }
 
         if (motionBlur != null)
         {
             float frameTime = 1f / Mathf.Max(1f, projectFPS);
-            float interval = Mathf.Clamp01(shutterSpeedSec / frameTime); // 180°≈0.5
+            float interval = Mathf.Clamp01(shutterSpeedSec / frameTime);
 
             motionBlur.active = true;
-
-            // 強度：把快門占比映射到 0~1，可再乘係數微調
-            float intensityScale = 1.0f;
-            motionBlur.intensity.value = interval * intensityScale;
-
-            // 取樣與速度閾值（依品質調）
+            motionBlur.intensity.value = interval;
             motionBlur.sampleCount = 12;
-            motionBlur.minimumVelocity.value = 0.5f;   // 低於此像素速度不模糊
-            motionBlur.maximumVelocity.value = 200f;   // 上限避免拖影過長
-
-            // 是否納入相機運動
+            motionBlur.minimumVelocity.value = 0.5f;
+            motionBlur.maximumVelocity.value = 200f;
             motionBlur.cameraMotionBlur.value = true;
         }
     }
@@ -431,6 +409,16 @@ public class TrackPhotoRig : MonoBehaviour
         nextShotTime = Time.time + 1f / Mathf.Max(1f, fps);
     }
 
+    public void TakeOneShot()
+    {
+        float fps = GetDriveFPS();
+        if (Time.time < mirrorBlackoutUntil) return;
+        burstCount = 0;
+        OnShutter?.Invoke(++burstCount);
+        mirrorBlackoutUntil = Time.time + Mathf.Max(0f, blackoutSec);
+        nextShotTime = Time.time + 1f / Mathf.Max(1f, fps);
+    }
+
     public void StartHoldShutter()
     {
         HoldShutter = true;
@@ -458,7 +446,11 @@ public class TrackPhotoRig : MonoBehaviour
 
     void ApplyRollingShutterShear()
     {
-        if (!rollingShutterApprox || !haveOrigProj || cam == null) { if (haveOrigProj) cam.projectionMatrix = origProj; return; }
+        if (!rollingShutterApprox || !haveOrigProj || cam == null)
+        {
+            if (haveOrigProj) cam.projectionMatrix = origProj;
+            return;
+        }
 
         float readoutSec = Mathf.Max(0f, readoutMs) * 0.001f;
         float yawRate = camAngVel.y * Mathf.Deg2Rad;
@@ -466,9 +458,9 @@ public class TrackPhotoRig : MonoBehaviour
 
         Matrix4x4 P = origProj;
         if (verticalReadoutTopToBottom)
-            P[0 + 4 * 1] += shear;
+            P[0, 1] += shear;   // m01
         else
-            P[1 + 4 * 0] += shear;
+            P[1, 0] += shear;   // m10
 
         cam.projectionMatrix = P;
     }
@@ -480,15 +472,17 @@ public class TrackPhotoRig : MonoBehaviour
         cam.usePhysicalProperties = true;
         cam.sensorSize = new Vector2(sensorWidthMm, sensorHeightMm);
         cam.focalLength = focalLengthMm;
+        cam.aperture = apertureF;
+        cam.shutterSpeed = shutterSpeedSec;
+        cam.iso = Mathf.Clamp(currentISO, Mathf.Max(50, isoMin), isoMax);
+        cam.focusDistance = Mathf.Max(0.01f, focusDistanceM);
 
         if (dof != null)
         {
             dof.active = true;
-            dof.focusMode.value = DepthOfFieldMode.UsePhysicalCamera; // 由相機的 aperture 生效
+            dof.focusMode.value = DepthOfFieldMode.UsePhysicalCamera;
             dof.focusDistance.value = Mathf.Max(0.01f, focusDistanceM);
-            // 不要再設定 dof.aperture（不存在）
         }
-
     }
 
     public void SetSubject(Transform t) { subject = t; hadLastPos = false; }
@@ -596,7 +590,6 @@ public class TrackPhotoRig : MonoBehaviour
         GUI.color = oc;
     }
 
-    // 鏡頭切換與變焦控制
     void HandleLensInputs()
     {
         if (Input.GetKeyDown(lensAKey)) SwitchLens(lensA, applyDefault: true);
@@ -617,18 +610,11 @@ public class TrackPhotoRig : MonoBehaviour
             else
                 focalLengthMm = targetFocal;
 
-            // 夾光圈到此焦段可用值
             float t = Mathf.InverseLerp(currentLens.minFocal, currentLens.maxFocal, focalLengthMm);
             float minF = Mathf.Lerp(currentLens.minF_atMinFocal, currentLens.minF_atMaxFocal, t);
             apertureF = Mathf.Max(apertureF, minF);
 
-            // 回寫相機物理參數
-            if (hdCam != null)
-            {
-                var p = hdCam.physicalParameters;
-                p.aperture = apertureF;
-                hdCam.physicalParameters = p;
-            }
+            cam.aperture = apertureF;
         }
     }
 
@@ -641,16 +627,10 @@ public class TrackPhotoRig : MonoBehaviour
             targetFocal = focalLengthMm;
             float t = Mathf.InverseLerp(lens.minFocal, lens.maxFocal, focalLengthMm);
             apertureF = Mathf.Lerp(lens.minF_atMinFocal, lens.minF_atMaxFocal, t);
-            if (hdCam != null)
-            {
-                var p = hdCam.physicalParameters;
-                p.aperture = apertureF;
-                hdCam.physicalParameters = p;
-            }
+            cam.aperture = apertureF;
         }
     }
 
-    // 依焦段套用鏡頭味道
     void ApplyLensTaste()
     {
         if (currentLens == null) return;
@@ -667,5 +647,44 @@ public class TrackPhotoRig : MonoBehaviour
             lensVig.active = true;
             lensVig.intensity.value = Mathf.Lerp(currentLens.vignetteAtMin, currentLens.vignetteAtMax, t);
         }
+    }
+
+    public void SetISOManual(int iso)
+    {
+        if (cam == null) return;
+        shutterPriority = false;
+        iso = Mathf.Clamp(iso, Mathf.Max(isoMin, isoMin), isoMax);
+        cam.usePhysicalProperties = true;
+        cam.iso = iso;
+        currentISO = iso;
+    }
+
+    public int GetISO()
+    {
+        if (cam == null) return 0;
+        return Mathf.RoundToInt(cam.iso);
+    }
+    public void FocusAtDistance(float meters)
+    {
+        focusDistanceM = Mathf.Max(0.01f, meters);
+        afContinuous = false;
+        if (cam) cam.focusDistance = focusDistanceM;
+    }
+
+    public void FocusAtWorldPoint(Vector3 worldPoint)
+    {
+        if (!cam) return;
+        float d = Vector3.Distance(cam.transform.position, worldPoint);
+        FocusAtDistance(d);
+    }
+
+    public void FocusAtScreenPoint(Vector2 screenPos, float maxMeters = 1000f, int layerMask = ~0)
+    {
+        if (!cam) return;
+        Ray r = cam.ScreenPointToRay(screenPos);
+        if (Physics.Raycast(r, out var hit, maxMeters, layerMask, QueryTriggerInteraction.Ignore))
+            FocusAtDistance(hit.distance);
+        else
+            FocusAtDistance(maxMeters);
     }
 }

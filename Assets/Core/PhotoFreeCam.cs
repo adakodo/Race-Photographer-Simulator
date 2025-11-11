@@ -61,7 +61,7 @@ public class PhotoFreeCam : MonoBehaviour
         HandleLook();
         HandleMove();
         HandleLens();
-        HandleRigShortcuts();
+        //HandleRigShortcuts();
         TryResumePanAssist();
     }
 
