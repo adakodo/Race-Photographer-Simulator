@@ -480,8 +480,11 @@ public class TrackPhotoRig : MonoBehaviour
         if (dof != null)
         {
             dof.active = true;
+            dof.focusDistanceMode.overrideState = true;
+            dof.focusDistance.overrideState = true;
             dof.focusMode.value = DepthOfFieldMode.UsePhysicalCamera;
             dof.focusDistance.value = Mathf.Max(0.01f, focusDistanceM);
+
         }
     }
 
