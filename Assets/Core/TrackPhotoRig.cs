@@ -106,7 +106,7 @@ public class TrackPhotoRig : MonoBehaviour
     public float blackoutSec = 0.05f;
     public int burstLimit = 0;
     public bool HoldShutter = false;
-    public Action<int> OnShutter;
+    public Action OnShutter;
 
     [Header("Viewfinder Overlay")]
     public bool overlayEnabled = true;
@@ -403,7 +403,7 @@ public class TrackPhotoRig : MonoBehaviour
         if (burstLimit > 0 && burstCount >= burstLimit) return;
 
         burstCount++;
-        OnShutter?.Invoke(burstCount);
+        OnShutter?.Invoke();
 
         mirrorBlackoutUntil = Time.time + Mathf.Max(0f, blackoutSec);
         nextShotTime = Time.time + 1f / Mathf.Max(1f, fps);
@@ -414,7 +414,7 @@ public class TrackPhotoRig : MonoBehaviour
         float fps = GetDriveFPS();
         if (Time.time < mirrorBlackoutUntil) return;
         burstCount = 0;
-        OnShutter?.Invoke(++burstCount);
+        OnShutter?.Invoke();
         mirrorBlackoutUntil = Time.time + Mathf.Max(0f, blackoutSec);
         nextShotTime = Time.time + 1f / Mathf.Max(1f, fps);
     }
