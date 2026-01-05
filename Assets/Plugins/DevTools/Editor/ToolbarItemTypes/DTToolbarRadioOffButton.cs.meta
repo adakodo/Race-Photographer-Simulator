@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 41cca5920ca067a40b4b73d4db3f20e5
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/DevTools/Editor/ToolbarItemTypes/DTToolbarRadioOffButton.cs
+  uploadId: 477984

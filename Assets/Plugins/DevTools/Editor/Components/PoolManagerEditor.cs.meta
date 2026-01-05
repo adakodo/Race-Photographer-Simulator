@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2f1bf8d1bfc7bd84d88dbc07008b45ef
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/DevTools/Editor/Components/PoolManagerEditor.cs
+  uploadId: 477984

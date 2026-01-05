@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2d0c8e8404688bd43888b423616214a6
+timeCreated: 1442268494
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Vehicles/Materials/default.mat
+  uploadId: 477984

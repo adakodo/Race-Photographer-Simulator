@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 18aa167d4f1e1ba449563b1afca75ebc
+timeCreated: 1425478143
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Scenes/99_Performance API.unity
+  uploadId: 477984

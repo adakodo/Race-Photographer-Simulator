@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 52d51ba992d55654699202ddc813ee25
+timeCreated: 1542637007
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CG Modules/ModifierPathRelativeTranslation.cs
+  uploadId: 477984

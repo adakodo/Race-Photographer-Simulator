@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dc8fac1bdfdd8a8449262e25b5ed641e
+timeCreated: 1442663202
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Prefabs/RailtrackGeneratorSimple.prefab
+  uploadId: 477984

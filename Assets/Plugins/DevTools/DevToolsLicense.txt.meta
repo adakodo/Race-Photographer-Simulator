@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: f607cd45dadce574d9ed3cc48faa6e28
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/DevTools/DevToolsLicense.txt
+  uploadId: 477984

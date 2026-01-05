@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 44f9d629006bb76409d3626dd82797c0
+timeCreated: 1489020271
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Asteroid/Asteroid.mat
+  uploadId: 477984

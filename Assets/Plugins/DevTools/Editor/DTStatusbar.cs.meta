@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0e51fd46e878d264ead8664f69a93db9
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/DevTools/Editor/DTStatusbar.cs
+  uploadId: 477984

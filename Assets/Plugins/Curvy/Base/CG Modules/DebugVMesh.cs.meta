@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 057c96da40c092343886bcef75fde4c4
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CG Modules/DebugVMesh.cs
+  uploadId: 477984

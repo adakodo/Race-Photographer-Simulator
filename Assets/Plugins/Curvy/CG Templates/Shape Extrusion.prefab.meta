@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f315c63dc9020a742946fcaf77dcebad
+timeCreated: 1443439562
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/CG Templates/Shape Extrusion.prefab
+  uploadId: 477984

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: de116dccf1b16c24daaf876b841affcd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Planet/Planet.mat
+  uploadId: 477984

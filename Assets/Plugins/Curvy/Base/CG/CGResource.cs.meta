@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e08f4ad1d0c546b4cab3c0faddd74868
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CG/CGResource.cs
+  uploadId: 477984

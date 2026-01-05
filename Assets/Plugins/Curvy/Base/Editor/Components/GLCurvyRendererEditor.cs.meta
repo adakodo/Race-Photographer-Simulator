@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 87651198517c52f488f2ce77fa2a87cc
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/Editor/Components/GLCurvyRendererEditor.cs
+  uploadId: 477984

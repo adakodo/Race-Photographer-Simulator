@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 059cceb0ba6e50741bfe6ec2c755d5f4
+labels:
+- Grass
+- Ground
+- Nature
+- Pattern
+- Terrain
+- Clover
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Materials/Grass.mat
+  uploadId: 477984

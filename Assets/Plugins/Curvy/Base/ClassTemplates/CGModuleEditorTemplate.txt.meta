@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: cf0dee5ede4f40b409eeac853942044b
+TextScriptImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/ClassTemplates/CGModuleEditorTemplate.txt
+  uploadId: 477984

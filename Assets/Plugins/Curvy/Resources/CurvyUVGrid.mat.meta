@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: a7b80bb583c53d44a91f66d1e2eb52f6
+NativeFormatImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Resources/CurvyUVGrid.mat
+  uploadId: 477984

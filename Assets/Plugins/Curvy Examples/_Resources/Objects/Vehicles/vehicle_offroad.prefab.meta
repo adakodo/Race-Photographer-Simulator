@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 19d19d9eb3c0c0448b2dd42b12951170
+timeCreated: 1442459809
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Vehicles/vehicle_offroad.prefab
+  uploadId: 477984

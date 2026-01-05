@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 258cd2fde7ecd5940ba82055ab0a1993
+timeCreated: 1442546886
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Rail/Materials/rail_car_coupling.mat
+  uploadId: 477984

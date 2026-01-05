@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7b6cc4acf7df7244889b69e880b69908
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Scenes/28_AsteroidBelt.unity
+  uploadId: 477984

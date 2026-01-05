@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0352d3a03998f41468aeff206517dd0e
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/Editor/CurvyEditorUtility.cs
+  uploadId: 477984

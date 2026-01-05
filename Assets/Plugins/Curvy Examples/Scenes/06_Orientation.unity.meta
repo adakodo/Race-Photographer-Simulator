@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a8705a7c11af64b489986edef4a07358
+timeCreated: 1444156166
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Scenes/06_Orientation.unity
+  uploadId: 477984

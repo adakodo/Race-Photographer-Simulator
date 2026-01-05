@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: e1897b667b05641448d9cb45004d9bbf
+timeCreated: 1518901676
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CodeContractsUtility.cs
+  uploadId: 477984

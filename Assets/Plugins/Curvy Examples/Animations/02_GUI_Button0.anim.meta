@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bec413d19bf329c4a9b179c1f58f724d
+timeCreated: 1527115579
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Animations/02_GUI_Button0.anim
+  uploadId: 477984

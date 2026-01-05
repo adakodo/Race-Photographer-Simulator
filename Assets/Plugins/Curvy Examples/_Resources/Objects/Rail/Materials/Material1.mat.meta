@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c961040172f09b347b8ad7d6c3474755
+timeCreated: 1442528228
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Rail/Materials/Material1.mat
+  uploadId: 477984
