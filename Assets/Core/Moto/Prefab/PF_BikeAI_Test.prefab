@@ -41,8 +41,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9126401849387380711}
+  - component: {fileID: 7879368801868057291}
+  - component: {fileID: 5462289167107298916}
   m_Layer: 0
-  m_Name: MotorcycleController
+  m_Name: PF_BikeAI_Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,13 +59,70 @@ Transform:
   m_GameObject: {fileID: 7695834314030599795}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.78, y: 0.5, z: -25.2}
+  m_LocalPosition: {x: -7.78, y: 0, z: -25.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2985376460625919503}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7879368801868057291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7695834314030599795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7319b8ca4cb42d4097db68ded1aec38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  track: {fileID: 0}
+  strategy: {fileID: 5462289167107298916}
+  startSpeed: 18
+  maxSpeed: 30
+  acceleration: 10
+  brakeAcceleration: 18
+  currentOffset: 0
+  laneOffsetSmooth: 4
+  rotationLerp: 10
+  leanAmount: 12
+  leanSmooth: 8
+  snapToNearestOnStart: 1
+  startDistanceOnTrack: 0
+  heightOffset: 0
+  nearUpdateDistance: 40
+  farUpdateInterval: 0.1
+  lodReference: {fileID: 0}
+--- !u!114 &5462289167107298916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7695834314030599795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55a7e4269b3798f4ea21b9341c9aa132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cruiseSpeed: 28
+  defaultOffset: 0
+  followDistance: 10
+  brakeDistance: 5
+  minFollowSpeed: 4
+  curveLookAhead: 12
+  curveAngleForFullSlowdown: 50
+  minCurveSpeedRatio: 0.65
+  enableOvertake: 0
+  overtakeOffset: 1.5
+  overtakeTriggerDistance: 8
+  overtakeCompleteDistance: 2.5
+  returnOffsetThreshold: 0.15
+  laneCheckGap: 8
+  laneOffsetTolerance: 0.8
+  overtakeSpeedBonus: 3
 --- !u!1001 &5495056833904501294
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -78,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
       propertyPath: m_LocalPosition.z
