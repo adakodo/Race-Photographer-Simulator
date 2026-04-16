@@ -98,6 +98,13 @@ MonoBehaviour:
   snapToNearestOnStart: 1
   startDistanceOnTrack: 0
   heightOffset: 0
+  snapToGround: 1
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  groundRayUpOffset: 3
+  groundRayDistance: 10
+  groundSnapSmoothSpeed: 30
   nearUpdateDistance: 40
   farUpdateInterval: 0.1
   lodReference: {fileID: 0}

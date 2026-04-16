@@ -50,6 +50,18 @@ public class BikeAITrackAgent : MonoBehaviour
     [SerializeField] private float startDistanceOnTrack = 0f;
     [SerializeField] private float heightOffset = 0f;
 
+    [Header("Ground Snap — 貼地 Raycast")]
+    [Tooltip("啟用後車輛 Y 軸會貼合賽道 Mesh 表面（Raycast 取樣），XZ 仍由 Spline Path 決定")]
+    [SerializeField] private bool snapToGround = true;
+    [Tooltip("哪些 Layer 視為賽道表面（Raycast 命中目標）")]
+    [SerializeField] private LayerMask groundLayerMask = ~0;
+    [Tooltip("Raycast 起點相對 Spline 樣本沿 up 方向的上方偏移（公尺）")]
+    [SerializeField] private float groundRayUpOffset = 3f;
+    [Tooltip("Raycast 最大向下距離（公尺）")]
+    [SerializeField] private float groundRayDistance = 10f;
+    [Tooltip("Y 軸平滑速度（公尺/秒），避免 Mesh 拼接處抖動；0 表示瞬時跟進")]
+    [SerializeField] private float groundSnapSmoothSpeed = 30f;
+
     [Header("LOD")]
     [SerializeField] private float nearUpdateDistance = 40f;
     [SerializeField] private float farUpdateInterval = 0.1f;
@@ -64,6 +76,11 @@ public class BikeAITrackAgent : MonoBehaviour
 
     private OvertakeState overtakeState;
     private BikeAITrackAgent overtakeTarget;
+
+    /// <summary>是否已有有效的貼地 Y 取樣（用於首次無平滑直接跟進）。</summary>
+    private bool hasGroundY;
+    /// <summary>平滑後的貼地 Y 值。</summary>
+    private float smoothedGroundY;
 
     /// <summary>已完成的圈數（從 0 開始，通過起終點線時 +1）。</summary>
     private int currentLap;
@@ -203,7 +220,7 @@ public class BikeAITrackAgent : MonoBehaviour
     {
         TrackSplineProvider.TrackSample sample = track.GetSampleByDistance(distanceOnTrack);
 
-        Vector3 finalPosition = sample.position + sample.right * currentOffset + sample.up * heightOffset;
+        Vector3 finalPosition = ResolveFinalPosition(sample, deltaTime, immediate: false);
         Quaternion targetRotation = Quaternion.LookRotation(sample.forward, sample.up);
 
         // --- 曲率傾斜：取前方樣本計算賽道彎曲方向 ---
@@ -238,7 +255,46 @@ public class BikeAITrackAgent : MonoBehaviour
             return;
 
         TrackSplineProvider.TrackSample sample = track.GetSampleByDistance(distanceOnTrack);
-        transform.position = sample.position + sample.right * currentOffset + sample.up * heightOffset;
+        transform.position = ResolveFinalPosition(sample, 0f, immediate: true);
         transform.rotation = Quaternion.LookRotation(sample.forward, sample.up);
+    }
+
+    /// <summary>
+    /// 計算車輛最終世界座標：XZ 來自 Spline + 橫向偏移，Y 透過向下 Raycast 貼合賽道 Mesh 表面。
+    /// 若 Raycast 未命中或未啟用貼地，則退回使用 Spline 樣本的高度。
+    /// </summary>
+    private Vector3 ResolveFinalPosition(TrackSplineProvider.TrackSample sample, float deltaTime, bool immediate)
+    {
+        // 基礎位置：沿 Spline 右向量套用橫向偏移
+        Vector3 basePosition = sample.position + sample.right * currentOffset;
+
+        if (snapToGround)
+        {
+            // 以 sample.up 為基準向上抬起一段距離再向下射線，確保從 Mesh 上方起算
+            Vector3 rayOrigin = basePosition + sample.up * groundRayUpOffset;
+            float maxDistance = groundRayUpOffset + groundRayDistance;
+
+            if (Physics.Raycast(rayOrigin, -sample.up, out RaycastHit hit, maxDistance, groundLayerMask, QueryTriggerInteraction.Ignore))
+            {
+                float targetY = hit.point.y + heightOffset;
+
+                // 首次取樣或瞬時模式直接套用，避免生成時飛一段再落下
+                if (immediate || !hasGroundY || groundSnapSmoothSpeed <= 0f)
+                {
+                    smoothedGroundY = targetY;
+                    hasGroundY = true;
+                }
+                else
+                {
+                    smoothedGroundY = Mathf.MoveTowards(smoothedGroundY, targetY, groundSnapSmoothSpeed * deltaTime);
+                }
+
+                // XZ 僅取自 Spline，Y 使用 Mesh 取樣結果
+                return new Vector3(basePosition.x, smoothedGroundY, basePosition.z);
+            }
+        }
+
+        // 回退：照舊使用 Spline 高度 + 沿 up 的高度偏移
+        return basePosition + sample.up * heightOffset;
     }
 }
