@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c5cf72ca5ff168f48bf33ddedce933b1
+timeCreated: 1448048134
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Scenes/51_InfiniteTrack.unity
+  uploadId: 477984

@@ -81,15 +81,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   track: {fileID: 0}
   strategy: {fileID: 5462289167107298916}
-  startSpeed: 18
-  maxSpeed: 30
-  acceleration: 10
-  brakeAcceleration: 18
+  startSpeed: 30
+  maxSpeed: 70
+  acceleration: 15
+  brakeAcceleration: 35
   currentOffset: 0
-  laneOffsetSmooth: 4
+  laneOffsetSmooth: 6
   rotationLerp: 10
-  leanAmount: 12
   leanSmooth: 8
+  maxLeanAngle: 58
+  curvatureLookAhead: 10
+  curvatureAngleForMaxLean: 25
+  laneChangeLeanFactor: 18
+  bikeLength: 2.2
+  bikeWidth: 0.8
   snapToNearestOnStart: 1
   startDistanceOnTrack: 0
   heightOffset: 0
@@ -108,22 +113,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55a7e4269b3798f4ea21b9341c9aa132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cruiseSpeed: 28
+  cruiseSpeed: 45
   defaultOffset: 0
-  followDistance: 12
-  brakeDistance: 7
-  minFollowSpeed: 4
-  curveLookAhead: 12
-  curveAngleForFullSlowdown: 50
-  minCurveSpeedRatio: 0.65
-  enableOvertake: 0
-  overtakeOffset: 1.5
-  overtakeTriggerDistance: 8
-  overtakeCompleteDistance: 2.5
-  returnOffsetThreshold: 0.15
-  laneCheckGap: 8
-  laneOffsetTolerance: 0.8
-  overtakeSpeedBonus: 3
+  followDistance: 2.5
+  brakeDistance: 1.5
+  minFollowSpeed: 15
+  curveLookAhead: 15
+  curveAngleForFullSlowdown: 45
+  minCurveSpeedRatio: 0.55
+  curveExitLookBehind: 5
+  exitBoostRatio: 1.2
+  enableRacingLine: 1
+  racingLineWidth: 1.8
+  racingLineApexLookAhead: 8
+  racingLineEntryLookAhead: 30
+  racingLineCurvatureRef: 3
+  numberOfPacks: 3
+  packSpeedGap: 3
+  withinPackSpeedSpread: 2
+  assignedPack: -1
+  enableVariation: 1
+  racingLineWidthVariation: 0.6
+  apexLookAheadVariation: 4
+  defaultOffsetVariation: 0.5
+  curveSpeedRatioVariation: 0.1
+  enableCatchUp: 1
+  catchUpThreshold: 12
+  catchUpMaxDistance: 40
+  catchUpSpeedBonus: 6
+  rearPressureDistance: 10
+  rearPressureSpeedBonus: 2
+  enableSlipstream: 1
+  slipstreamMaxDistance: 18
+  slipstreamMinDistance: 1.5
+  slipstreamOffsetTolerance: 1
+  slipstreamSpeedBonus: 5
+  enableAttackDefend: 1
+  defenseOffsetStrength: 0.6
+  defenseSpeedBonus: 2
+  counterAttackDuration: 4
+  counterAttackSpeedBonus: 3
+  aggressiveness: 0.5
+  aggressivenessVariation: 0.35
+  enableLateralAvoidance: 1
+  lateralAvoidDistance: 2.5
+  lateralMinSeparation: 0.3
+  lateralAvoidStrength: 1
+  enableRacePhase: 1
+  earlyOvertakeDistanceMultiplier: 1.8
+  earlyCatchUpMultiplier: 0.3
+  lateOvertakeDistanceMultiplier: 1.5
+  lateCatchUpMultiplier: 2
+  lateOvertakeSpeedMultiplier: 1.5
+  enableOvertake: 1
+  overtakeOffset: 1.2
+  overtakeTriggerDistance: 14
+  overtakeCompleteDistance: 1.5
+  returnOffsetThreshold: 0.1
+  laneCheckGap: 5
+  laneOffsetTolerance: 0.6
+  overtakeSpeedBonus: 7
 --- !u!114 &354134501413495274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +190,7 @@ MonoBehaviour:
   drawOffset: 1
   drawFrontAgentLine: 1
   drawTrackSample: 1
-  drawText: 1
+  drawTextWhenSelected: 1
   forwardLength: 2
   offsetSphereRadius: 0.18
   sampleSphereRadius: 0.12
@@ -160,12 +209,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 2985376460625919503}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.35
+      value: 0.675
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28f8c0534ef9192488f00fa4dacee6e9, type: 3}
       propertyPath: m_LocalPosition.z

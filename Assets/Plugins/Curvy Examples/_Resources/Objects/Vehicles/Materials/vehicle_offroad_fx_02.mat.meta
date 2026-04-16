@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2a4e2809a54b4cf469c7bc87f84ba53b
+timeCreated: 1442459511
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Vehicles/Materials/vehicle_offroad_fx_02.mat
+  uploadId: 477984

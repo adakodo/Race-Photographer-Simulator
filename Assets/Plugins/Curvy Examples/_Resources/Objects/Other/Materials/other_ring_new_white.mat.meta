@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 51a7a57ed37fa1c43b442afb5f98dd6b
+timeCreated: 1444158020
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Other/Materials/other_ring_new_white.mat
+  uploadId: 477984

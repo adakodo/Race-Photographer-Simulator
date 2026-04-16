@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 59a5c9f887f9d6847af1e5f268ed1e8f
+timeCreated: 1442523231
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Rail/Materials/rail_car_tiny.mat
+  uploadId: 477984

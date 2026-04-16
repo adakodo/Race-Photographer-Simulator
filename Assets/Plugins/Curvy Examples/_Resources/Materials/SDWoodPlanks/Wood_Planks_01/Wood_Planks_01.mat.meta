@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 53f8c8b79a8c4374db97e82e5a35b4af
+timeCreated: 1524001331
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Materials/SDWoodPlanks/Wood_Planks_01/Wood_Planks_01.mat
+  uploadId: 477984

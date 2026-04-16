@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 4e7542226fdb3e8458d6dd939f67c79e
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/DevTools/Editor/DTResource.cs
+  uploadId: 477984

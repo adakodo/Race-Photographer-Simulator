@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 59ecc94f7dd0a5840ada5f40c954b5b2
+timeCreated: 1439816695
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Materials/Player.mat
+  uploadId: 477984

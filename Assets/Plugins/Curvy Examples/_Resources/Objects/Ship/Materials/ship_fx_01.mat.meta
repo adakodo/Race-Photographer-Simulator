@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bf4292b17c0db714d9da9355221ebd99
+timeCreated: 1440413917
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Ship/Materials/ship_fx_01.mat
+  uploadId: 477984

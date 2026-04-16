@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e3a7d0835f56139489a740ad8d5d5cb4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/Editor/Network/AnnouncementWindow.cs
+  uploadId: 477984

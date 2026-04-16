@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f64f2e16941ca42428683f89332f6c2c
+timeCreated: 1433838612
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Scenes/21_CGExtrusion.unity
+  uploadId: 477984

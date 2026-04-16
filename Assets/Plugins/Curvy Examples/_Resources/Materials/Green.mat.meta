@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 565ef250fc41ce145a81dd01a16e3db6
+timeCreated: 1436426661
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Materials/Green.mat
+  uploadId: 477984

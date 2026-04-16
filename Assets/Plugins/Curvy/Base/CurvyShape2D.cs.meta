@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dd2a6fa79083d8c468863ad668f919e3
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CurvyShape2D.cs
+  uploadId: 477984

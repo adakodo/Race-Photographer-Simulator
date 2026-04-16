@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e8cf642e62d6f7d46a837a85f484d3ac
+timeCreated: 1441972194
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/CG Templates/Spot GameObjects.prefab
+  uploadId: 477984

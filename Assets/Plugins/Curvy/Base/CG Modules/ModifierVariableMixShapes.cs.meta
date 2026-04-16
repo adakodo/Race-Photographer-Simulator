@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e9f9ee6c17ecbcf429b7eaa26063afd1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CG Modules/ModifierVariableMixShapes.cs
+  uploadId: 477984

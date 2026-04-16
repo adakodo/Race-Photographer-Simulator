@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5a955516767ce5f468c818f1f44ab381
+timeCreated: 1441946994
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Rail/Materials/rail_bridge.mat
+  uploadId: 477984

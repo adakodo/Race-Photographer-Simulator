@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 97953e54a2c2482449099d6d8dfb2de4
+timeCreated: 1468747688
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/DevTools/Editor/DTSceneView.cs
+  uploadId: 477984

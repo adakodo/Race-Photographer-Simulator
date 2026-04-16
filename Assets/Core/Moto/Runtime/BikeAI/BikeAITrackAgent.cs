@@ -18,8 +18,8 @@ public class BikeAITrackAgent : MonoBehaviour
     [Header("Speed")]
     [SerializeField] private float startSpeed = 18f;
     [SerializeField] private float maxSpeed = 40f;
-    [SerializeField] private float acceleration = 12f;
-    [SerializeField] private float brakeAcceleration = 20f;
+    [SerializeField] private float acceleration = 18f;
+    [SerializeField] private float brakeAcceleration = 35f;
 
     [Header("Lane")]
     [SerializeField] private float currentOffset = 0f;
@@ -27,8 +27,23 @@ public class BikeAITrackAgent : MonoBehaviour
 
     [Header("Rotation")]
     [SerializeField] private float rotationLerp = 10f;
-    [SerializeField] private float leanAmount = 25f;
     [SerializeField] private float leanSmooth = 8f;
+
+    [Header("Lean — 曲率傾斜")]
+    [Tooltip("最大傾斜角度（度）。MotoGP 約 50-62°")]
+    [SerializeField] private float maxLeanAngle = 50f;
+    [Tooltip("前方取樣距離（公尺），用於計算賽道曲率")]
+    [SerializeField] private float curvatureLookAhead = 8f;
+    [Tooltip("曲率角度達到此值時傾斜到最大角度")]
+    [SerializeField] private float curvatureAngleForMaxLean = 30f;
+    [Tooltip("換道偏移造成的額外傾斜比例（疊加在曲率傾斜上）")]
+    [SerializeField] private float laneChangeLeanFactor = 15f;
+
+    [Header("Dimensions — 車體尺寸")]
+    [Tooltip("車身長度（公尺），用於縱向間距計算。MotoGP 約 2.0~2.2m")]
+    [SerializeField] private float bikeLength = 2.1f;
+    [Tooltip("車身寬度（公尺），用於橫向間距計算。MotoGP 約 0.6~0.7m")]
+    [SerializeField] private float bikeWidth = 0.65f;
 
     [Header("Placement")]
     [SerializeField] private bool snapToNearestOnStart = true;
@@ -50,6 +65,11 @@ public class BikeAITrackAgent : MonoBehaviour
     private OvertakeState overtakeState;
     private BikeAITrackAgent overtakeTarget;
 
+    /// <summary>已完成的圈數（從 0 開始，通過起終點線時 +1）。</summary>
+    private int currentLap;
+    /// <summary>上一幀的 distanceOnTrack，用於偵測跨越起終點線。</summary>
+    private float previousDistance;
+
     public TrackSplineProvider Track => track;
     public float DistanceOnTrack => distanceOnTrack;
     public float CurrentSpeed => currentSpeed;
@@ -59,8 +79,17 @@ public class BikeAITrackAgent : MonoBehaviour
     public float MaxSpeed => maxSpeed;
     public float Acceleration => acceleration;
     public float BrakeAcceleration => brakeAcceleration;
+    public float BikeLength => bikeLength;
+    public float BikeWidth => bikeWidth;
     public OvertakeState CurrentOvertakeState => overtakeState;
     public BikeAITrackAgent OvertakeTarget => overtakeTarget;
+
+    /// <summary>已完成的圈數。</summary>
+    public int CurrentLap => currentLap;
+    /// <summary>總比賽距離（圈數 × 賽道長度 + 當前距離），用於名次排序。</summary>
+    public float TotalRaceDistance => track != null && track.IsValid()
+        ? currentLap * track.Length + distanceOnTrack
+        : 0f;
 
     private void OnEnable()
     {
@@ -110,6 +139,15 @@ public class BikeAITrackAgent : MonoBehaviour
         UpdateTransform(deltaTime);
     }
 
+    /// <summary>由 Spawner 呼叫，在 Start 前注入賽道引用與起始位置。</summary>
+    public void InitTrack(TrackSplineProvider trackProvider, float startDist, float startOffsetLateral = 0f)
+    {
+        track = trackProvider;
+        startDistanceOnTrack = startDist;
+        currentOffset = startOffsetLateral;
+        snapToNearestOnStart = false;
+    }
+
     public void SetTargetSpeed(float value)
     {
         targetSpeed = Mathf.Clamp(value, 0f, maxSpeed);
@@ -148,7 +186,16 @@ public class BikeAITrackAgent : MonoBehaviour
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * deltaTime);
         currentOffset = Mathf.MoveTowards(currentOffset, targetOffset, laneOffsetSmooth * deltaTime);
 
+        previousDistance = distanceOnTrack;
         distanceOnTrack += currentSpeed * deltaTime;
+
+        // 圈數偵測：距離超過賽道長度時代表通過起終點線
+        float trackLength = track.Length;
+        if (trackLength > 0f && distanceOnTrack >= trackLength)
+        {
+            currentLap++;
+        }
+
         distanceOnTrack = track.WrapDistance(distanceOnTrack);
     }
 
@@ -159,8 +206,23 @@ public class BikeAITrackAgent : MonoBehaviour
         Vector3 finalPosition = sample.position + sample.right * currentOffset + sample.up * heightOffset;
         Quaternion targetRotation = Quaternion.LookRotation(sample.forward, sample.up);
 
+        // --- 曲率傾斜：取前方樣本計算賽道彎曲方向 ---
+        float aheadDist = distanceOnTrack + curvatureLookAhead;
+        TrackSplineProvider.TrackSample aheadSample = track.GetSampleByDistance(aheadDist);
+
+        // 使用 SignedAngle 取得帶方向的曲率角度（正值 = 左彎，負值 = 右彎）
+        float curvatureAngle = Vector3.SignedAngle(sample.forward, aheadSample.forward, sample.up);
+
+        // 將曲率角度映射到傾斜角度（彎越急傾越多）
+        float curvatureRatio = Mathf.Clamp(curvatureAngle / curvatureAngleForMaxLean, -1f, 1f);
+        float curvatureLean = -curvatureRatio * maxLeanAngle;
+
+        // --- 換道傾斜：橫向偏移變化疊加額外傾斜 ---
         float offsetDelta = targetOffset - currentOffset;
-        float targetLean = Mathf.Clamp(-offsetDelta * leanAmount, -leanAmount, leanAmount);
+        float laneChangeLean = Mathf.Clamp(-offsetDelta * laneChangeLeanFactor, -maxLeanAngle, maxLeanAngle);
+
+        // --- 合併並限制最大傾斜角 ---
+        float targetLean = Mathf.Clamp(curvatureLean + laneChangeLean, -maxLeanAngle, maxLeanAngle);
         currentLean = Mathf.MoveTowards(currentLean, targetLean, leanSmooth * 100f * deltaTime);
 
         Quaternion leanRotation = Quaternion.AngleAxis(currentLean, Vector3.forward);

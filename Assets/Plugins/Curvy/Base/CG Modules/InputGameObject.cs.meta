@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: a8c91f1c72cdd8f4b99ab43636b1db6b
+timeCreated: 1440678509
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CG Modules/InputGameObject.cs
+  uploadId: 477984

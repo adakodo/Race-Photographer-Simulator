@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fa90813a05e58e64582140e7b76336c1
+timeCreated: 1436426654
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Materials/Blue.mat
+  uploadId: 477984

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b36b3155057bf0d4394daf4499e37b41
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CurvyGizmoHelper.cs
+  uploadId: 477984

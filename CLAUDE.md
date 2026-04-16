@@ -9,6 +9,14 @@ A Unity 6 (6000.0.38f1) game simulating a race track photographer. The player co
 **Render pipeline:** HDRP 17.0.3
 **Key external plugin:** Curvy Splines (`Assets/Plugins/Curvy/`) — wraps `CurvySpline` for all track path math.
 
+## Design Documents
+
+開發特定系統功能前，**必須先閱讀對應的設計文件**理解需求與已完成進度；新增或修改功能後，**必須同步更新設計文件**（狀態、變更紀錄等）。
+
+| 系統 | 設計文件路徑 |
+|------|-------------|
+| BikeAI MotoGP 仿真 | `Assets/Core/Moto/Runtime/BikeAI/BikeAI_MotoGP_Design.md` |
+
 ## Coding Principles
 
 - **註解語言**：所有 C# 程式碼內的註解一律使用繁體中文。

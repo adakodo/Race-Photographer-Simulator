@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e3d3fc405aabcbb48a873e5fcd3e1ab6
+timeCreated: 1439473403
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Materials/Black.mat
+  uploadId: 477984

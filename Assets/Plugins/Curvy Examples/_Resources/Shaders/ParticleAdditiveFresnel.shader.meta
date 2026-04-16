@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 459ce014ae96ed3438d05af3f6f12f71
+timeCreated: 1441851326
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Shaders/ParticleAdditiveFresnel.shader
+  uploadId: 477984

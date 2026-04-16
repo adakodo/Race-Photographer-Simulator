@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f0926acb1fc4a7b4a89f1a3f1a3ad9ff
+timeCreated: 1442544508
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/_Resources/Objects/Rail/Materials/rail_car_body.mat
+  uploadId: 477984

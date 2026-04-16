@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 967866bd6dfb207458ed4a36e414e5bc
+timeCreated: 1438595490
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy Examples/Scripts/MotorController.cs
+  uploadId: 477984

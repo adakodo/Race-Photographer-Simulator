@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: aae93c9564267e4419881a7c0347a902
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/CurvyInterpolatableMetadataBaseGeneric.cs
+  uploadId: 477984

@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: d64f7ccb370611049ae60f863ffc36e6
+TextScriptImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/Curvy/Base/ClassTemplates/ShapeTemplate.txt
+  uploadId: 477984

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5adfeb5b25c486542af34d2069a2f4fe
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7038
+  packageName: Curvy Splines 7
+  packageVersion: 7.1.8
+  assetPath: Assets/Plugins/LibTessDotNet/LibTessDotNetLicense.txt
+  uploadId: 477984
