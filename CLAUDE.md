@@ -11,6 +11,15 @@ A Unity 6 (6000.0.38f1) game simulating a race track photographer. The player co
 
 ## Design Documents
 
+所有設計文件集中於 `Docs/` 資料夾，該資料夾同時是 **Obsidian vault**。使用者會透過 Obsidian 閱讀與管理文件。
+
+**Markdown 撰寫規範：**
+- 所有 `.md` 文件必須相容 Obsidian 語法（標準 Markdown + Obsidian 擴充）
+- 文件間的互相引用使用 Obsidian wiki link 格式：`[[文件名]]` 或 `[[文件名#章節]]`
+- 支援 Obsidian callout 語法（`> [!note]`、`> [!warning]` 等）
+- 標籤使用 `#tag` 格式
+- 避免使用 Obsidian 不支援的 HTML 或非標準語法
+
 開發特定系統功能前，**必須先閱讀對應的設計文件**理解需求與已完成進度；新增或修改功能後，**必須同步更新設計文件**（狀態、變更紀錄等）。
 
 | 系統 | 設計文件路徑 |

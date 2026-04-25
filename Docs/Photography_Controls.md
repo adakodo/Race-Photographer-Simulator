@@ -3,6 +3,8 @@
 > 本文件為賽道攝影模擬器的操作參考。
 > 新增或修改操控方式後請同步更新本文件。
 
+**相關文件：** [[Photography_Design|攝影系統設計]] · [[BikeAI_MotoGP_Design|BikeAI 設計文件]]
+
 ---
 
 ## 一、攝影機移動（PhotoFreeCam）
