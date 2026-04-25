@@ -15,7 +15,9 @@ A Unity 6 (6000.0.38f1) game simulating a race track photographer. The player co
 
 | 系統 | 設計文件路徑 |
 |------|-------------|
-| BikeAI MotoGP 仿真 | `Assets/Core/Moto/Runtime/BikeAI/BikeAI_MotoGP_Design.md` |
+| BikeAI MotoGP 仿真 | `Docs/BikeAI_MotoGP_Design.md` |
+| 攝影系統設計 | `Docs/Photography_Design.md` |
+| 攝影系統操作手冊 | `Docs/Photography_Controls.md` |
 
 ## Coding Principles
 
@@ -52,6 +54,7 @@ This is a Unity project. All building, running, and testing is done through the 
 
 **Main scenes:**
 - `Assets/Core/Moto/BikeAI.unity` — AI racing test scene
+- `Assets/Core/Phot/CameraTest.unity` — camera system test scene
 - `Assets/Race_PIT+LANE/Race_Lane.unity` — main race lane scene
 
 ## Code Architecture
@@ -70,20 +73,21 @@ Three-layer architecture:
 
 Track geometry is queried through **`TrackSplineProvider`**, which wraps a Curvy `CurvySpline`. All external callers use world-distance (meters) rather than Curvy's internal TF (0–1 normalized). **`TrackWidthProfile`** provides keyframed left/right track width for clamping lateral offsets.
 
-### Photography System (`Assets/Core/`)
+### Photography System (`Assets/Core/Phot/Runtime/`)
 
 **`TrackPhotoRig`** (`[ExecuteAlways]`) — the core camera simulation. Manages:
-- Two swappable `ZoomLens` presets (24-70mm / 100-400mm), switched with `1`/`2`, scroll-wheel zoom
+- Two swappable `ZoomLens` presets (24-70mm / 100-400mm), switched via public `SwitchLens()`, scroll-wheel zoom via `SetTargetFocal()`
 - Physical camera properties written directly to Unity's `Camera` component each frame
 - AF-C with subject velocity prediction (`afLeadSec`)
-- Panning assist (soft-lock toward `subject`)
+- Panning assist with dual-layer state: `panAssist` (user intent) + `panAssistSystemPaused` (system pause via `PauseSystemPanAssist()` / `ResumeSystemPanAssist()`)
 - Handheld shake via dual-frequency Perlin noise
 - Shutter priority auto-ISO metering from `mainLight.intensity` via `luxToEV100` curve
 - Virtual ND filter (reduces exposure compensation)
 - Drive modes: Single / ContinuousLow / ContinuousHigh / Custom
 - Rolling shutter approximation via projection matrix shear
-- IMGUI viewfinder overlay (rule-of-thirds, center cross, horizon, safe frame, mirror blackout)
 - Fires `OnShutter` event for capture pipeline
+
+**`ViewfinderOverlay`** — IMGUI viewfinder overlay (rule-of-thirds, center cross, horizon, safe frame, mirror blackout). Reads `TrackPhotoRig.MirrorBlackoutUntil` for blackout timing.
 
 **Photo capture pipeline:**
 ```
@@ -99,11 +103,13 @@ TrackPhotoRig.OnShutter
 
 **`CopyColorAfterPost`** is an HDRP `CustomPass`. It **must** be placed in a `CustomPassVolume` with `Injection Point = After Post Process` on the same camera as `PhotoCaptureManager`. It blits `cameraColorBuffer` into a pre-allocated `RTHandle`.
 
-**`PhotoRigController`** — keyboard input layer for all rig parameters. Uses reflection to call the private `SwitchLens()` method on `TrackPhotoRig`.
+**`PhotoRigController`** — the sole keyboard/mouse input layer for all rig parameters. Calls `SwitchLens()` and `SetTargetFocal()` directly (no reflection).
 
-**`PhotoFreeCam`** — free-look WASD camera. Temporarily disables `panAssist` while the user moves the mouse/camera, then re-enables it after `panAssistResumeDelay`.
+**`PhotoFreeCam`** — free-look WASD camera. Calls `PauseSystemPanAssist()` while the user moves, then `ResumeSystemPanAssist()` after `panAssistResumeDelay`. Does not handle zoom (delegated to `PhotoRigController`).
 
 **`TrackPhotoHUD`** — IMGUI bottom bar displaying shutter speed, aperture, exposure comp, and focal length.
+
+**`PF_PhotographyRig`** (`Assets/Core/Phot/Prefab/`) — complete photography rig prefab containing Main Camera, HUD, CustomPass, and PhotoPrinter as children.
 
 ## Key Design Constraints
 

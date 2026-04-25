@@ -85,11 +85,11 @@ public class PhotoRigController : MonoBehaviour
         if (Input.GetKeyDown(rollingToggleKey)) rig.rollingShutterApprox = !rig.rollingShutterApprox;
         if (Input.GetKeyDown(shakeToggleKey)) rig.handheldShake = !rig.handheldShake;
 
-        if (Input.GetKeyDown(lensAKey)) TrySwitchLensA();
-        if (Input.GetKeyDown(lensBKey)) TrySwitchLensB();
+        if (Input.GetKeyDown(lensAKey)) rig.SwitchLens(rig.lensA, true);
+        if (Input.GetKeyDown(lensBKey)) rig.SwitchLens(rig.lensB, true);
 
         if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.01f)
-            rig.focalLengthMm = Mathf.Clamp(rig.focalLengthMm + -Input.mouseScrollDelta.y * focalStepMm, 8f, 600f);
+            rig.SetTargetFocal(rig.focalLengthMm + -Input.mouseScrollDelta.y * focalStepMm);
 
         // Focus shortcuts
         if (Input.GetMouseButtonDown(2))
@@ -147,16 +147,4 @@ public class PhotoRigController : MonoBehaviour
         }
     }
 
-    void TrySwitchLensA()
-    {
-        var m = typeof(TrackPhotoRig).GetMethod("SwitchLens", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-        var f = typeof(TrackPhotoRig).GetField("lensA", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-        if (m != null && f != null) m.Invoke(rig, new object[] { f.GetValue(rig), true });
-    }
-    void TrySwitchLensB()
-    {
-        var m = typeof(TrackPhotoRig).GetMethod("SwitchLens", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-        var f = typeof(TrackPhotoRig).GetField("lensB", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-        if (m != null && f != null) m.Invoke(rig, new object[] { f.GetValue(rig), true });
-    }
 }

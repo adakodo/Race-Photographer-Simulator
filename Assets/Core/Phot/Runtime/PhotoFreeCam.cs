@@ -60,7 +60,6 @@ public class PhotoFreeCam : MonoBehaviour
 
         HandleLook();
         HandleMove();
-        HandleLens();
         //HandleRigShortcuts();
         TryResumePanAssist();
     }
@@ -105,17 +104,6 @@ public class PhotoFreeCam : MonoBehaviour
         transform.position += vMove * Time.deltaTime;
     }
 
-    void HandleLens()
-    {
-        if (!rig) return;
-
-        float scroll = Input.mouseScrollDelta.y;
-        if (Mathf.Abs(scroll) > 0.0001f)
-        {
-            rig.focalLengthMm = Mathf.Clamp(rig.focalLengthMm + -scroll * focalStep, focalMin, focalMax);
-        }
-    }
-
     void HandleRigShortcuts()
     {
         if (!rig) return;
@@ -143,9 +131,9 @@ public class PhotoFreeCam : MonoBehaviour
 
     void PausePanAssist()
     {
-        if (rig && rig.panAssist)
+        if (rig)
         {
-            rig.panAssist = false;
+            rig.PauseSystemPanAssist();
             panAssistResumeAt = Time.time + panAssistResumeDelay;
         }
     }
@@ -153,7 +141,7 @@ public class PhotoFreeCam : MonoBehaviour
     void TryResumePanAssist()
     {
         if (!rig) return;
-        if (!rig.panAssist && Time.time >= panAssistResumeAt && vMove.sqrMagnitude < 0.00001f)
-            rig.panAssist = true;
+        if (Time.time >= panAssistResumeAt && vMove.sqrMagnitude < 0.00001f)
+            rig.ResumeSystemPanAssist();
     }
 }

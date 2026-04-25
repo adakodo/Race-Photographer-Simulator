@@ -9,9 +9,6 @@ public class TrackPhotoRig : MonoBehaviour
     #region Zoom Lenses
     public bool smoothZoom = true;
     public float zoomLerp = 12f;
-    public KeyCode lensAKey = KeyCode.Alpha1;
-    public KeyCode lensBKey = KeyCode.Alpha2;
-
     ZoomLens currentLens;
     float targetFocal;
     LensDistortion lensDist;
@@ -77,6 +74,7 @@ public class TrackPhotoRig : MonoBehaviour
 
     [Header("Panning Assist")]
     public bool panAssist = true;
+    bool panAssistSystemPaused;
     [Range(0f, 1f)] public float panStrength = 0.9f;
     public float panMaxYawSpeedDeg = 360f;
     public float projectFPS = 60f;
@@ -108,15 +106,7 @@ public class TrackPhotoRig : MonoBehaviour
     public bool HoldShutter = false;
     public Action OnShutter;
 
-    [Header("Viewfinder Overlay")]
-    public bool overlayEnabled = true;
-    public bool ruleOfThirds = true;
-    public bool centerCross = true;
-    public bool horizonLevel = true;
-    public bool safeFrame = true;
-    public float safeFrameAspect = 2.39f;
-    public float overlayThickness = 2f;
-    public Color overlayColor = new Color(1f, 1f, 1f, 0.8f);
+    public float MirrorBlackoutUntil => mirrorBlackoutUntil;
 
     [Header("Handheld Shake")]
     public bool handheldShake = false;
@@ -239,7 +229,7 @@ public class TrackPhotoRig : MonoBehaviour
         UpdateDriveAndShutter();
         UpdateCamAngularVelocity();
         ApplyRollingShutterShear();
-        HandleLensInputs();
+        UpdateLensInterpolation();
         ApplyLensTaste();
         ApplyAll();
     }
@@ -263,9 +253,13 @@ public class TrackPhotoRig : MonoBehaviour
         focusDistanceM = dist;
     }
 
+    public void PauseSystemPanAssist() { panAssistSystemPaused = true; }
+    public void ResumeSystemPanAssist() { panAssistSystemPaused = false; }
+    public bool IsPanAssistActive => panAssist && !panAssistSystemPaused;
+
     void UpdatePanning()
     {
-        if (!panAssist || subject == null || cam == null) return;
+        if (!panAssist || panAssistSystemPaused || subject == null || cam == null) return;
 
         Vector3 toTarget = subject.position - cam.transform.position;
         if (toTarget.sqrMagnitude < 1e-4f) return;
@@ -284,7 +278,7 @@ public class TrackPhotoRig : MonoBehaviour
     void ApplyHandheldShake()
     {
         if (!handheldShake) { baseRot = transform.rotation; basePos = transform.position; return; }
-        if (shakeOnlyWhenPanning && !panAssist) return;
+        if (shakeOnlyWhenPanning && !IsPanAssistActive) return;
 
         float t = Time.time;
         float fLen = Mathf.Max(1f, focalLengthMm);
@@ -490,138 +484,29 @@ public class TrackPhotoRig : MonoBehaviour
 
     public void SetSubject(Transform t) { subject = t; hadLastPos = false; }
 
-    void OnGUI()
+    public void SetTargetFocal(float focal)
     {
-        if (!overlayEnabled || Event.current.type != EventType.Repaint) return;
-        if (!cam) return;
-
-        var r = new Rect(0, 0, Screen.width, Screen.height);
-        DrawOverlay(r);
+        if (currentLens == null) return;
+        targetFocal = Mathf.Clamp(focal, currentLens.minFocal, currentLens.maxFocal);
     }
 
-    void DrawOverlay(Rect r)
+    void UpdateLensInterpolation()
     {
-        if (ruleOfThirds)
-        {
-            float x1 = r.width / 3f;
-            float x2 = x1 * 2f;
-            float y1 = r.height / 3f;
-            float y2 = y1 * 2f;
-            DrawLine(new Vector2(x1, 0), new Vector2(x1, r.height), overlayColor, overlayThickness);
-            DrawLine(new Vector2(x2, 0), new Vector2(x2, r.height), overlayColor, overlayThickness);
-            DrawLine(new Vector2(0, y1), new Vector2(r.width, y1), overlayColor, overlayThickness);
-            DrawLine(new Vector2(0, y2), new Vector2(r.width, y2), overlayColor, overlayThickness);
-        }
+        if (currentLens == null) return;
 
-        if (centerCross)
-        {
-            float cx = r.width * 0.5f;
-            float cy = r.height * 0.5f;
-            float len = Mathf.Min(r.width, r.height) * 0.02f;
-            DrawLine(new Vector2(cx - len, cy), new Vector2(cx + len, cy), overlayColor, overlayThickness);
-            DrawLine(new Vector2(cx, cy - len), new Vector2(cx, cy + len), overlayColor, overlayThickness);
-        }
+        if (smoothZoom)
+            focalLengthMm = Mathf.Lerp(focalLengthMm, targetFocal, 1f - Mathf.Exp(-zoomLerp * Time.deltaTime));
+        else
+            focalLengthMm = targetFocal;
 
-        if (horizonLevel)
-        {
-            float cy = r.height * 0.5f;
-            DrawLine(new Vector2(r.width * 0.1f, cy), new Vector2(r.width * 0.9f, cy), overlayColor, overlayThickness);
-        }
+        float t = Mathf.InverseLerp(currentLens.minFocal, currentLens.maxFocal, focalLengthMm);
+        float minF = Mathf.Lerp(currentLens.minF_atMinFocal, currentLens.minF_atMaxFocal, t);
+        apertureF = Mathf.Max(apertureF, minF);
 
-        if (safeFrame && safeFrameAspect > 0f)
-        {
-            float targetW = r.width;
-            float targetH = targetW / safeFrameAspect;
-            if (targetH > r.height)
-            {
-                targetH = r.height;
-                targetW = targetH * safeFrameAspect;
-            }
-            float x = (r.width - targetW) * 0.5f;
-            float y = (r.height - targetH) * 0.5f;
-
-            DrawRect(new Rect(x, y, targetW, targetH), overlayColor, overlayThickness);
-        }
-
-        if (Time.time < mirrorBlackoutUntil)
-        {
-            DrawFilledRect(r, new Color(0f, 0f, 0f, 0.6f));
-        }
+        cam.aperture = apertureF;
     }
 
-    Texture2D _tex1x1;
-    Texture2D Tex1x1()
-    {
-        if (_tex1x1 == null)
-        {
-            _tex1x1 = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            _tex1x1.hideFlags = HideFlags.HideAndDontSave;
-            _tex1x1.SetPixel(0, 0, Color.white);
-            _tex1x1.Apply();
-        }
-        return _tex1x1;
-    }
-
-    void DrawLine(Vector2 a, Vector2 b, Color c, float thickness)
-    {
-        Matrix4x4 m = GUI.matrix;
-        Color oc = GUI.color;
-        GUI.color = c;
-
-        Vector2 d = b - a;
-        float angle = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
-        float len = d.magnitude;
-        GUIUtility.RotateAroundPivot(angle, a);
-        GUI.DrawTexture(new Rect(a.x, a.y - thickness * 0.5f, len, thickness), Tex1x1());
-        GUI.matrix = m;
-        GUI.color = oc;
-    }
-
-    void DrawRect(Rect r, Color c, float thickness)
-    {
-        DrawLine(new Vector2(r.xMin, r.yMin), new Vector2(r.xMax, r.yMin), c, thickness);
-        DrawLine(new Vector2(r.xMax, r.yMin), new Vector2(r.xMax, r.yMax), c, thickness);
-        DrawLine(new Vector2(r.xMax, r.yMax), new Vector2(r.xMin, r.yMax), c, thickness);
-        DrawLine(new Vector2(r.xMin, r.yMax), new Vector2(r.xMin, r.yMin), c, thickness);
-    }
-
-    void DrawFilledRect(Rect r, Color c)
-    {
-        Color oc = GUI.color;
-        GUI.color = c;
-        GUI.DrawTexture(r, Tex1x1());
-        GUI.color = oc;
-    }
-
-    void HandleLensInputs()
-    {
-        if (Input.GetKeyDown(lensAKey)) SwitchLens(lensA, applyDefault: true);
-        if (Input.GetKeyDown(lensBKey)) SwitchLens(lensB, applyDefault: true);
-
-        float scroll = Input.mouseScrollDelta.y;
-        if (Mathf.Abs(scroll) > 0.001f && currentLens != null)
-        {
-            float step = currentLens.zoomStep;
-            float next = Mathf.Clamp(targetFocal + -scroll * step, currentLens.minFocal, currentLens.maxFocal);
-            targetFocal = next;
-        }
-
-        if (currentLens != null)
-        {
-            if (smoothZoom)
-                focalLengthMm = Mathf.Lerp(focalLengthMm, targetFocal, 1f - Mathf.Exp(-zoomLerp * Time.deltaTime));
-            else
-                focalLengthMm = targetFocal;
-
-            float t = Mathf.InverseLerp(currentLens.minFocal, currentLens.maxFocal, focalLengthMm);
-            float minF = Mathf.Lerp(currentLens.minF_atMinFocal, currentLens.minF_atMaxFocal, t);
-            apertureF = Mathf.Max(apertureF, minF);
-
-            cam.aperture = apertureF;
-        }
-    }
-
-    void SwitchLens(ZoomLens lens, bool applyDefault)
+    public void SwitchLens(ZoomLens lens, bool applyDefault)
     {
         currentLens = lens;
         if (applyDefault)
