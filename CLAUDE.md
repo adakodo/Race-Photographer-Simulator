@@ -27,6 +27,7 @@ A Unity 6 (6000.0.38f1) game simulating a race track photographer. The player co
 | BikeAI MotoGP 仿真 | `Docs/BikeAI_MotoGP_Design.md` |
 | 攝影系統設計 | `Docs/Photography_Design.md` |
 | 攝影系統操作手冊 | `Docs/Photography_Controls.md` |
+| Gameplay 流程設計 | `Docs/Gameplay_Design.md` |
 
 ## Coding Principles
 
@@ -123,6 +124,16 @@ TrackPhotoRig.OnShutter
 **`PhotoGallery`** — IMGUI photo gallery. `F1` opens/closes (pauses game). Thumbnail grid with click-to-select, double-click for fullscreen. Shows EXIF and score breakdown. Arrow keys navigate, `Delete` removes photos.
 
 **`PF_PhotographyRig`** (`Assets/Core/Phot/Prefab/`) — complete photography rig prefab containing Main Camera, HUD, CustomPass, and PhotoPrinter as children.
+
+### Gameplay System (`Assets/Core/Gameplay/Runtime/`)
+
+**`GameManager`** (singleton) — game state machine: `Idle → Countdown → Playing → TimeUp → Settlement`. Holds `LevelConfig` reference, manages timer, collects photo results via `PhotoCaptureManager.OnPhotoReady`, controls input enable/disable on `PhotoRigController` and `PhotoFreeCam`. Provides stats queries (`GetValidCount`, `GetBestScore`, `IsPassed`, `GetStars`).
+
+**`LevelConfig`** (`ScriptableObject`) — per-level configuration: `timeLimit`, pass condition (`requiredCount` photos ≥ `requiredScore`), star thresholds (`star2Count`/`star2BestScore`, `star3Count`/`star3BestScore`). Created via `Assets > Create > Game > Level Config`.
+
+**`GameplayHUD`** — IMGUI overlay during play: countdown (3-2-1-GO), remaining time (flashes red in last 10s), photo count, valid count progress, best score.
+
+**`SettlementUI`** — IMGUI full-screen results after time up: photo thumbnails with scores, stats (best/average/count), pass/fail + star rating (★~★★★), retry button.
 
 ## Key Design Constraints
 
