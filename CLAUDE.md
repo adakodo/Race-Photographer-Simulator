@@ -96,7 +96,7 @@ Track geometry is queried through **`TrackSplineProvider`**, which wraps a Curvy
 - Rolling shutter approximation via projection matrix shear
 - Fires `OnShutter` event for capture pipeline
 
-**`ViewfinderOverlay`** — IMGUI viewfinder overlay (rule-of-thirds, center cross, horizon, safe frame, mirror blackout). Reads `TrackPhotoRig.MirrorBlackoutUntil` for blackout timing.
+**`ViewfinderOverlay`** — IMGUI viewfinder overlay (rule-of-thirds, center cross, horizon, safe frame, focus bracket, mirror blackout). Focus bracket changes color based on `TrackPhotoRig.IsFocusConfirmed()`. Reads `TrackPhotoRig.MirrorBlackoutUntil` for blackout timing.
 
 **Photo capture pipeline:**
 ```
@@ -110,19 +110,23 @@ TrackPhotoRig.OnShutter
                       → PhotoPrintSpawner.SpawnPhoto()  ← spawns world-space Quad
 ```
 
-**`CopyColorAfterPost`** is an HDRP `CustomPass`. It **must** be placed in a `CustomPassVolume` with `Injection Point = After Post Process` on the same camera as `PhotoCaptureManager`. It blits `cameraColorBuffer` into a pre-allocated `RTHandle`.
+**`CopyColorAfterPost`** is an HDRP `CustomPass` (instance-based). It **must** be placed in a `CustomPassVolume` with `Injection Point = After Post Process`. `PhotoCaptureManager` finds it via `CopyColorAfterPost.FindInstance()`. It blits `cameraColorBuffer` into a pre-allocated `RTHandle`.
 
-**`PhotoRigController`** — the sole keyboard/mouse input layer for all rig parameters. Calls `SwitchLens()` and `SetTargetFocal()` directly (no reflection).
+**`PhotoRigController`** — the sole keyboard/mouse input layer for all rig parameters. All parameter changes go through API methods (`SetShutterSpeed`, `SetAperture`, `SetExposureComp`, etc.). Also handles subject cycling (`Tab`/`BackQuote`) via `BikeAITrafficManager.RankedAgents`.
 
 **`PhotoFreeCam`** — free-look WASD camera. Calls `PauseSystemPanAssist()` while the user moves, then `ResumeSystemPanAssist()` after `panAssistResumeDelay`. Does not handle zoom (delegated to `PhotoRigController`).
 
 **`TrackPhotoHUD`** — IMGUI bottom bar displaying shutter speed, aperture, exposure comp, and focal length.
 
+**`PhotoScoreEvaluator`** — evaluates photos on 4 dimensions (composition, exposure, sharpness, focus), each 0–100. Weights configurable in Inspector. Records EXIF snapshot per photo.
+
+**`PhotoGallery`** — IMGUI photo gallery. `F1` opens/closes (pauses game). Thumbnail grid with click-to-select, double-click for fullscreen. Shows EXIF and score breakdown. Arrow keys navigate, `Delete` removes photos.
+
 **`PF_PhotographyRig`** (`Assets/Core/Phot/Prefab/`) — complete photography rig prefab containing Main Camera, HUD, CustomPass, and PhotoPrinter as children.
 
 ## Key Design Constraints
 
-- `CopyColorAfterPost` uses static fields for the capture request. Only one capture can be in flight at a time.
+- `CopyColorAfterPost` is instance-based. Only one capture can be in flight per instance at a time.
 - `TrackPhotoRig` is `[ExecuteAlways]` — its `OnValidate` and `OnEnable` run in the Editor. Avoid side-effecting operations that shouldn't run outside Play mode.
 - `TrackSplineProvider.IsValid()` must be checked before any spline query — Curvy splines may not be initialized at Start.
 - Offset clamping (`SetTargetOffset`) goes through `TrackSplineProvider.ClampOffset()` which delegates to `TrackWidthProfile`; skip `TrackWidthProfile` on an agent and offsets are unclamped.

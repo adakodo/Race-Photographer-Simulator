@@ -484,6 +484,80 @@ public class TrackPhotoRig : MonoBehaviour
 
     public void SetSubject(Transform t) { subject = t; hadLastPos = false; }
 
+    // ── 曝光參數 API ──
+    public void SetShutterSpeed(float sec)
+    {
+        shutterSpeedSec = Mathf.Clamp(sec, 1f / 8000f, 30f);
+    }
+
+    public void SetAperture(float f)
+    {
+        apertureF = Mathf.Clamp(f, 0.7f, 32f);
+    }
+
+    public void SetExposureComp(float ev)
+    {
+        exposureCompEV = ev;
+    }
+
+    public void SetNDStops(float stops)
+    {
+        ndStops = Mathf.Clamp(stops, 0f, 8f);
+    }
+
+    // ── 對焦 API ──
+    public void SetAFContinuous(bool on)
+    {
+        afContinuous = on;
+    }
+
+    public void ManualFocusAdjust(float deltaMeters)
+    {
+        afContinuous = false;
+        focusDistanceM = Mathf.Max(0.01f, focusDistanceM + deltaMeters);
+    }
+
+    // ── 拍攝模式 API ──
+    public void SetDriveMode(Drive mode)
+    {
+        driveMode = mode;
+    }
+
+    public void SetPanAssist(bool on)
+    {
+        panAssist = on;
+    }
+
+    public void SetHandheldShake(bool on)
+    {
+        handheldShake = on;
+    }
+
+    public void SetRollingShutter(bool on)
+    {
+        rollingShutterApprox = on;
+    }
+
+    // ── 合焦判定 ──
+    public float GetSubjectDistance()
+    {
+        if (subject == null || cam == null) return -1f;
+        return Vector3.Distance(cam.transform.position, subject.position);
+    }
+
+    public bool IsFocusConfirmed()
+    {
+        float subDist = GetSubjectDistance();
+        if (subDist < 0f) return false;
+        float fM = focalLengthMm * 0.001f;
+        float coc = 0.03f * 0.001f;
+        float H = (fM * fM) / (apertureF * coc);
+        float near = focusDistanceM * H / (H + focusDistanceM - fM);
+        float far = focusDistanceM * H / (H - focusDistanceM + fM);
+        if (far < 0f) far = float.MaxValue;
+        return subDist >= near && subDist <= far;
+    }
+
     public void SetTargetFocal(float focal)
     {
         if (currentLens == null) return;

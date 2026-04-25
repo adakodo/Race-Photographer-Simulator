@@ -14,6 +14,14 @@ public class ViewfinderOverlay : MonoBehaviour
     public float overlayThickness = 2f;
     public Color overlayColor = new Color(1f, 1f, 1f, 0.8f);
 
+    [Header("Focus Bracket")]
+    public bool focusBracket = true;
+    public float bracketSize = 40f;
+    public float bracketCorner = 10f;
+    public Color focusConfirmColor = new Color(0f, 1f, 0f, 0.9f);
+    public Color focusNotConfirmColor = new Color(1f, 0f, 0f, 0.6f);
+    public bool showFocusDistance = true;
+
     Texture2D _tex1x1;
 
     void Reset()
@@ -83,6 +91,40 @@ public class ViewfinderOverlay : MonoBehaviour
             float y = (r.height - targetH) * 0.5f;
 
             DrawRect(new Rect(x, y, targetW, targetH), overlayColor, overlayThickness);
+        }
+
+        // 對焦框
+        if (focusBracket && rig != null)
+        {
+            bool confirmed = rig.IsFocusConfirmed();
+            Color fc = confirmed ? focusConfirmColor : focusNotConfirmColor;
+            float cx = r.width * 0.5f;
+            float cy = r.height * 0.5f;
+            float half = bracketSize * 0.5f;
+            float corner = Mathf.Min(bracketCorner, half);
+
+            // 左上角
+            DrawLine(new Vector2(cx - half, cy - half), new Vector2(cx - half + corner, cy - half), fc, overlayThickness);
+            DrawLine(new Vector2(cx - half, cy - half), new Vector2(cx - half, cy - half + corner), fc, overlayThickness);
+            // 右上角
+            DrawLine(new Vector2(cx + half - corner, cy - half), new Vector2(cx + half, cy - half), fc, overlayThickness);
+            DrawLine(new Vector2(cx + half, cy - half), new Vector2(cx + half, cy - half + corner), fc, overlayThickness);
+            // 左下角
+            DrawLine(new Vector2(cx - half, cy + half - corner), new Vector2(cx - half, cy + half), fc, overlayThickness);
+            DrawLine(new Vector2(cx - half, cy + half), new Vector2(cx - half + corner, cy + half), fc, overlayThickness);
+            // 右下角
+            DrawLine(new Vector2(cx + half, cy + half - corner), new Vector2(cx + half, cy + half), fc, overlayThickness);
+            DrawLine(new Vector2(cx + half - corner, cy + half), new Vector2(cx + half, cy + half), fc, overlayThickness);
+
+            if (showFocusDistance)
+            {
+                string dist = rig.focusDistanceM.ToString("0.0") + "m";
+                GUIStyle style = new GUIStyle(GUI.skin.label);
+                style.fontSize = 14;
+                style.normal.textColor = fc;
+                style.alignment = TextAnchor.UpperCenter;
+                GUI.Label(new Rect(cx - 40f, cy + half + 4f, 80f, 24f), dist, style);
+            }
         }
 
         // 反光鏡遮黑

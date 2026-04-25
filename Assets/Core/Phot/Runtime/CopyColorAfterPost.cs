@@ -4,13 +4,13 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class CopyColorAfterPost : CustomPass
 {
-    static RTHandle pendingRT;
-    static Camera pendingCam;
-    static bool pending;
-    static int targetFrame;
-    public static int lastCapturedFrame { get; private set; } = -1;
+    RTHandle pendingRT;
+    Camera pendingCam;
+    bool pending;
+    int targetFrame;
+    public int lastCapturedFrame { get; private set; } = -1;
 
-    public static void RequestCapture(RTHandle rt, Camera cam, bool captureNextFrame)
+    public void RequestCapture(RTHandle rt, Camera cam, bool captureNextFrame)
     {
         pendingRT = rt;
         pendingCam = cam;
@@ -19,16 +19,7 @@ public class CopyColorAfterPost : CustomPass
         lastCapturedFrame = -1;
     }
 
-    public static void ClearRequest()
-    {
-        pending = false;
-        pendingCam = null;
-        pendingRT = null;
-        lastCapturedFrame = -1;
-    }
-
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetStatics()
+    public void ClearRequest()
     {
         pending = false;
         pendingCam = null;
@@ -38,9 +29,6 @@ public class CopyColorAfterPost : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
-        
-        //Debug.Log($"[CopyColorAfterPost] Exec on {ctx.hdCamera.camera.name}, pending={pending}, tgtFrame={targetFrame}, now={Time.frameCount}");
-
         if (!pending || pendingRT == null) return;
         if (ctx.hdCamera.camera != pendingCam) return;
         if (Time.frameCount < targetFrame) return;
@@ -52,5 +40,20 @@ public class CopyColorAfterPost : CustomPass
         lastCapturedFrame = Time.frameCount;
         pending = false;
         pendingCam = null;
+    }
+
+    public static CopyColorAfterPost FindInstance()
+    {
+        var volumes = Object.FindObjectsByType<CustomPassVolume>(FindObjectsSortMode.None);
+        foreach (var vol in volumes)
+        {
+            if (vol.customPasses == null) continue;
+            foreach (var pass in vol.customPasses)
+            {
+                if (pass is CopyColorAfterPost cpp)
+                    return cpp;
+            }
+        }
+        return null;
     }
 }

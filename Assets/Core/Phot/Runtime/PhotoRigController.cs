@@ -26,6 +26,8 @@ public class PhotoRigController : MonoBehaviour
     public KeyCode shakeToggleKey = KeyCode.H;
     public KeyCode lensAKey = KeyCode.Alpha1;
     public KeyCode lensBKey = KeyCode.Alpha2;
+    public KeyCode subjectNextKey = KeyCode.Tab;
+    public KeyCode subjectPrevKey = KeyCode.BackQuote;
 
     [Header("Steps")]
     public float shutterStepEV = 1f / 3f;
@@ -37,6 +39,7 @@ public class PhotoRigController : MonoBehaviour
     public float focalStepMm = 5f;
 
     Camera _cam;
+    int subjectIndex = -1;
 
     void Reset()
     {
@@ -70,26 +73,30 @@ public class PhotoRigController : MonoBehaviour
         if (Input.GetKeyDown(isoDownKey)) AdjustISO(-isoStepEV);
         if (Input.GetKeyDown(isoUpKey)) AdjustISO(+isoStepEV);
 
-        if (Input.GetKeyDown(ecDownKey)) rig.exposureCompEV -= exposureCompStep;
-        if (Input.GetKeyDown(ecUpKey)) rig.exposureCompEV += exposureCompStep;
+        if (Input.GetKeyDown(ecDownKey)) rig.SetExposureComp(rig.exposureCompEV - exposureCompStep);
+        if (Input.GetKeyDown(ecUpKey)) rig.SetExposureComp(rig.exposureCompEV + exposureCompStep);
 
-        if (Input.GetKeyDown(ndDownKey)) rig.ndStops = Mathf.Max(0f, rig.ndStops - ndStep);
-        if (Input.GetKeyDown(ndUpKey)) rig.ndStops = Mathf.Min(8f, rig.ndStops + ndStep);
+        if (Input.GetKeyDown(ndDownKey)) rig.SetNDStops(rig.ndStops - ndStep);
+        if (Input.GetKeyDown(ndUpKey)) rig.SetNDStops(rig.ndStops + ndStep);
 
-        if (Input.GetKeyDown(afToggleKey)) rig.afContinuous = !rig.afContinuous;
-        if (Input.GetKey(focusNearKey)) rig.focusDistanceM = Mathf.Max(0.1f, rig.focusDistanceM - focusStepMeters * Time.deltaTime * 6f);
-        if (Input.GetKey(focusFarKey)) rig.focusDistanceM += focusStepMeters * Time.deltaTime * 6f;
+        if (Input.GetKeyDown(afToggleKey)) rig.SetAFContinuous(!rig.afContinuous);
+        if (Input.GetKey(focusNearKey)) rig.ManualFocusAdjust(-focusStepMeters * Time.deltaTime * 6f);
+        if (Input.GetKey(focusFarKey)) rig.ManualFocusAdjust(focusStepMeters * Time.deltaTime * 6f);
 
         if (Input.GetKeyDown(driveCycleKey)) CycleDrive();
-        if (Input.GetKeyDown(panAssistToggleKey)) rig.panAssist = !rig.panAssist;
-        if (Input.GetKeyDown(rollingToggleKey)) rig.rollingShutterApprox = !rig.rollingShutterApprox;
-        if (Input.GetKeyDown(shakeToggleKey)) rig.handheldShake = !rig.handheldShake;
+        if (Input.GetKeyDown(panAssistToggleKey)) rig.SetPanAssist(!rig.panAssist);
+        if (Input.GetKeyDown(rollingToggleKey)) rig.SetRollingShutter(!rig.rollingShutterApprox);
+        if (Input.GetKeyDown(shakeToggleKey)) rig.SetHandheldShake(!rig.handheldShake);
 
         if (Input.GetKeyDown(lensAKey)) rig.SwitchLens(rig.lensA, true);
         if (Input.GetKeyDown(lensBKey)) rig.SwitchLens(rig.lensB, true);
 
         if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.01f)
             rig.SetTargetFocal(rig.focalLengthMm + -Input.mouseScrollDelta.y * focalStepMm);
+
+        // 追焦目標切換
+        if (Input.GetKeyDown(subjectNextKey)) CycleSubject(1);
+        if (Input.GetKeyDown(subjectPrevKey)) CycleSubject(-1);
 
         // Focus shortcuts
         if (Input.GetMouseButtonDown(2))
@@ -105,14 +112,12 @@ public class PhotoRigController : MonoBehaviour
 
     void AdjustShutter(float ev)
     {
-        float t = Mathf.Clamp(rig.shutterSpeedSec * Mathf.Pow(2f, -ev), 1f / 8000f, 30f);
-        rig.shutterSpeedSec = t;
+        rig.SetShutterSpeed(rig.shutterSpeedSec * Mathf.Pow(2f, -ev));
     }
 
     void AdjustAperture(float ev)
     {
-        float n = Mathf.Clamp(rig.apertureF * Mathf.Pow(2f, ev * 0.5f), 0.7f, 32f);
-        rig.apertureF = n;
+        rig.SetAperture(rig.apertureF * Mathf.Pow(2f, ev * 0.5f));
     }
 
     void AdjustISO(float ev)
@@ -136,14 +141,28 @@ public class PhotoRigController : MonoBehaviour
         return best;
     }
 
+    void CycleSubject(int dir)
+    {
+        var mgr = BikeAITrafficManager.Instance;
+        if (mgr == null) return;
+        var agents = mgr.RankedAgents;
+        if (agents == null || agents.Count == 0) return;
+
+        subjectIndex += dir;
+        if (subjectIndex < 0) subjectIndex = agents.Count - 1;
+        if (subjectIndex >= agents.Count) subjectIndex = 0;
+
+        rig.SetSubject(agents[subjectIndex].transform);
+    }
+
     void CycleDrive()
     {
         switch (rig.driveMode)
         {
-            case TrackPhotoRig.Drive.Single: rig.driveMode = TrackPhotoRig.Drive.ContinuousLow; break;
-            case TrackPhotoRig.Drive.ContinuousLow: rig.driveMode = TrackPhotoRig.Drive.ContinuousHigh; break;
-            case TrackPhotoRig.Drive.ContinuousHigh: rig.driveMode = TrackPhotoRig.Drive.Custom; break;
-            default: rig.driveMode = TrackPhotoRig.Drive.Single; break;
+            case TrackPhotoRig.Drive.Single: rig.SetDriveMode(TrackPhotoRig.Drive.ContinuousLow); break;
+            case TrackPhotoRig.Drive.ContinuousLow: rig.SetDriveMode(TrackPhotoRig.Drive.ContinuousHigh); break;
+            case TrackPhotoRig.Drive.ContinuousHigh: rig.SetDriveMode(TrackPhotoRig.Drive.Custom); break;
+            default: rig.SetDriveMode(TrackPhotoRig.Drive.Single); break;
         }
     }
 

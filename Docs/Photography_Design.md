@@ -29,13 +29,15 @@ TrackPhotoRig ([ExecuteAlways])
 
 ViewfinderOverlay（觀景窗繪製，獨立組件）
   ├── IMGUI 繪製：三分線、中心十字、水平線、安全框
+  ├── 對焦框：合焦時綠色、未合焦時紅色 + 對焦距離顯示
   ├── 反光鏡遮黑（讀取 TrackPhotoRig.MirrorBlackoutUntil）
   └── 各元素可獨立開關
 
 PhotoRigController（唯一輸入層）
-  ├── 鍵盤操控所有 Rig 參數
+  ├── 鍵盤操控所有 Rig 參數（全部透過 API 方法）
   ├── 直接呼叫 SwitchLens()（無反射）
-  └── 滾輪變焦透過 SetTargetFocal()
+  ├── 滾輪變焦透過 SetTargetFocal()
+  └── Tab/BackQuote 切換追焦目標（整合 BikeAITrafficManager）
 
 PhotoFreeCam（自由視角）
   ├── WASD 移動 + 滑鼠視角（不處理變焦）
@@ -53,11 +55,23 @@ PhotoCaptureManager（擷取管理）
 
 CopyColorAfterPost（HDRP CustomPass）
   ├── Injection Point = After Post Process
-  ├── 全靜態請求佇列（一次一張）
+  ├── 實例化設計（支援多相機）
   └── Blit cameraColorBuffer → RTHandle
 
 PhotoPrintSpawner（照片輸出）
   └── 在世界空間生成 Quad 顯示拍攝結果
+
+PhotoScoreEvaluator（照片評分）
+  ├── 構圖評分：主體三分點距離 + 邊緣懲罰
+  ├── 曝光評分：ISO 過高懲罰 + 曝光補償偏離
+  ├── 銳利度評分：安全快門規則 + 搖攝補償
+  └── 對焦評分：景深計算合焦判定
+
+PhotoGallery（照片瀏覽）
+  ├── F1 開關圖庫（暫停遊戲）
+  ├── 縮圖一覽 + 點擊全螢幕
+  ├── EXIF 資訊 + 評分明細
+  └── 方向鍵導覽 + Delete 刪除
 ```
 
 ---
@@ -148,15 +162,13 @@ PhotoPrintSpawner（照片輸出）
 **原況**：`PhotoRigController.TrySwitchLensA/B()` 用 `System.Reflection` 呼叫 `SwitchLens()`。
 **修正**：`SwitchLens()` 改為 `public`，`PhotoRigController` 直接呼叫 `rig.SwitchLens(rig.lensA, true)`。
 
-### 4.4 API 一致性不足 🟡
-**現況**：部分操作走方法（`SetISOManual`、`TakeOneShot`），部分直接改 public field（`exposureCompEV`、`ndStops`、`afContinuous`）。
-**影響**：無法統一加驗證或事件通知。
-**建議**：為常用操作提供方法入口，保留 field 但建議透過方法修改。
+### 4.4 API 一致性不足 ✅ 已修正
+**原況**：部分操作走方法（`SetISOManual`、`TakeOneShot`），部分直接改 public field（`exposureCompEV`、`ndStops`、`afContinuous`）。
+**修正**：新增統一 API 方法：`SetShutterSpeed`、`SetAperture`、`SetExposureComp`、`SetNDStops`、`SetAFContinuous`、`ManualFocusAdjust`、`SetDriveMode`、`SetPanAssist`、`SetHandheldShake`、`SetRollingShutter`。`PhotoRigController` 已全面改用方法呼叫。同時新增合焦判定 API：`GetSubjectDistance()`、`IsFocusConfirmed()`。
 
-### 4.5 CopyColorAfterPost 全靜態 🟡
-**現況**：`pendingRT`、`pendingCam`、`pending` 皆為 static。
-**影響**：同時只能一張擷取；連拍過快時前一張被覆蓋；不支援多相機。
-**建議**：短期可接受（連拍有 blackout 間隔保護）；長期改為實例化設計。
+### 4.5 CopyColorAfterPost 全靜態 ✅ 已修正
+**原況**：`pendingRT`、`pendingCam`、`pending` 皆為 static，不支援多相機。
+**修正**：所有欄位改為實例成員，`RequestCapture`/`ClearRequest` 改為實例方法。新增 `FindInstance()` 靜態輔助方法（遍歷場景 `CustomPassVolume` 尋找實例）。`PhotoCaptureManager` 在 `OnEnable` 時透過 `FindInstance()` 取得參照。
 
 ### 4.6 PanAssist 狀態所有權不清 ✅ 已修正
 **原況**：`PhotoFreeCam` 與 `PhotoRigController` 都可直接寫入 `rig.panAssist`。
@@ -190,48 +202,48 @@ PhotoPrintSpawner（照片輸出）
 
 ---
 
-### 5.2 自動追焦目標選擇
+### 5.2 自動追焦目標選擇 ✅ 已完成
 
-**目標**：攝影師可快速選擇/切換追焦目標。
-
-**設計方向**：
-- 螢幕中央 Raycast 選擇最近的 BikeAITrackAgent
-- 快捷鍵切換「下一台車」/「上一台車」（依名次排序）
-- 與 `BikeAITrafficManager.GetAgentAtPosition()` 整合
+**實作**：
+- `PhotoRigController` 新增 `Tab`（下一台）/ `` ` ``（上一台）按鍵循環切換
+- 透過 `BikeAITrafficManager.Instance.RankedAgents` 取得依名次排序的車輛列表
+- 選擇後呼叫 `rig.SetSubject()` 設定追焦目標
 
 ---
 
-### 5.3 對焦點顯示與合焦反饋
+### 5.3 對焦點顯示與合焦反饋 ✅ 已完成
 
-**目標**：模擬真實相機觀景窗的對焦指示。
-
-**設計方向**：
-- 觀景窗顯示對焦框（中央/多點）
-- 合焦時對焦框變色或發出提示音
-- 景深預覽指示
-
----
-
-### 5.4 照片評分系統
-
-**目標**：對拍攝的照片進行構圖、曝光、清晰度評分。
-
-**設計方向**：
-- 構圖評分：主體位置是否在三分點
-- 曝光評分：直方圖分析
-- 清晰度評分：基於快門速度 vs 主體移動速度 vs 焦距
-- 綜合評分與等級
+**實作**：
+- `ViewfinderOverlay` 新增對焦框繪製（中央四角方括號）
+- 合焦時框為綠色，未合焦時為紅色
+- 框下方顯示當前對焦距離（公尺）
+- 合焦判定基於景深計算（CoC = 0.03mm，全片幅）
+- `TrackPhotoRig.IsFocusConfirmed()` 提供合焦狀態查詢
 
 ---
 
-### 5.5 照片瀏覽 / 圖庫
+### 5.4 照片評分系統 ✅ 已完成
 
-**目標**：拍完的照片可瀏覽、比較、刪除。
+**實作**：
+- 新增 `PhotoScoreEvaluator` 組件
+- 四項評分維度，各項 0~100 分：
+  - **構圖**（30%）：主體三分點距離 + 邊緣懲罰
+  - **曝光**（25%）：ISO 過高懲罰 + 曝光補償偏離
+  - **銳利度**（25%）：安全快門規則（1/焦距）+ 搖攝補償
+  - **對焦**（20%）：景深計算合焦判定 + 距離誤差比例
+- 每張照片記錄 EXIF 快照（快門/光圈/焦距/ISO/對焦距離/時間戳）
 
-**設計方向**：
-- 暫停遊戲後進入圖庫模式
-- 縮圖一覽 + 全螢幕檢視
-- 顯示 EXIF 資訊（焦距、光圈、快門、ISO）
+---
+
+### 5.5 照片瀏覽 / 圖庫 ✅ 已完成
+
+**實作**：
+- 新增 `PhotoGallery` 組件
+- `F1` 開關圖庫模式（暫停遊戲、顯示滑鼠游標）
+- 縮圖一覽：網格排列，點擊選取，再點擊進入全螢幕
+- 全螢幕檢視：顯示 EXIF 資訊 + 評分明細（C/E/S/F）
+- 方向鍵左右導覽，`Esc` 返回縮圖，`Delete` 刪除照片
+- 分數顏色標示：≥80 綠色、≥60 黃色、<60 紅色
 
 ---
 
@@ -253,10 +265,11 @@ PhotoPrintSpawner（照片輸出）
 | P1 | HUD 狀態列 | ✅ 完成 |
 | P1 | 照片世界顯示 | ✅ 完成 |
 | P2 | 架構重構（Overlay 拆分 + 輸入統一 + PanAssist） | ✅ 完成 |
-| P2 | 自動追焦目標選擇 | 待開發 |
-| P3 | 對焦點顯示與合焦反饋 | 待開發 |
-| P3 | 照片評分系統 | 待開發 |
-| P3 | 照片瀏覽 / 圖庫 | 待開發 |
+| P2 | API 一致性修正 + CopyColorAfterPost 實例化 | ✅ 完成 |
+| P2 | 自動追焦目標選擇 | ✅ 完成 |
+| P3 | 對焦點顯示與合焦反饋 | ✅ 完成 |
+| P3 | 照片評分系統 | ✅ 完成 |
+| P3 | 照片瀏覽 / 圖庫 | ✅ 完成 |
 
 ---
 
@@ -282,6 +295,8 @@ PhotoPrintSpawner（照片輸出）
 | `Assets/Core/Phot/Runtime/PhotoCaptureManager.cs` | 擷取流程管理（RTHandle + AsyncGPUReadback） |
 | `Assets/Core/Phot/Runtime/CopyColorAfterPost.cs` | HDRP CustomPass（After Post Process blit） |
 | `Assets/Core/Phot/Runtime/PhotoPrintSpawner.cs` | 世界空間照片 Quad 生成 |
+| `Assets/Core/Phot/Runtime/PhotoScoreEvaluator.cs` | 照片評分（構圖/曝光/銳利度/對焦） |
+| `Assets/Core/Phot/Runtime/PhotoGallery.cs` | 照片圖庫瀏覽（縮圖/全螢幕/EXIF/評分） |
 | `Assets/Core/Phot/Prefab/PF_PhotographyRig.prefab` | 完整攝影系統 Prefab |
 
 ---
@@ -293,3 +308,9 @@ PhotoPrintSpawner（照片輸出）
 | 2026-04-25 | 建立設計文件，記錄已完成功能、已知架構問題、待開發規劃 |
 | 2026-04-25 | 架構重構：拆分 ViewfinderOverlay、統一輸入處理（移除反射）、PanAssist 雙層狀態管理 |
 | 2026-04-25 | 資料夾整理：所有腳本統一至 Phot/Runtime/，場景移入 Phot/，建立 PF_PhotographyRig Prefab |
+| 2026-04-25 | 4.4 API 一致性修正：新增所有參數 setter 方法，PhotoRigController 全面改用 API |
+| 2026-04-25 | 4.5 CopyColorAfterPost 改為實例化設計，PhotoCaptureManager 透過 FindInstance() 取得參照 |
+| 2026-04-25 | 5.2 自動追焦目標選擇：Tab/BackQuote 循環切換 BikeAI 車輛 |
+| 2026-04-25 | 5.3 對焦點顯示：ViewfinderOverlay 對焦框 + 合焦變色 + 距離顯示 |
+| 2026-04-25 | 5.4 照片評分系統：PhotoScoreEvaluator（構圖/曝光/銳利度/對焦四維度） |
+| 2026-04-25 | 5.5 照片圖庫：PhotoGallery（縮圖/全螢幕/EXIF/評分/刪除） |

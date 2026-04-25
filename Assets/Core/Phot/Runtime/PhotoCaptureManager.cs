@@ -18,6 +18,7 @@ public class PhotoCaptureManager : MonoBehaviour
 
     RTHandle targetRT;
     Camera cam;
+    CopyColorAfterPost copyPass;
 
     void Awake()
     {
@@ -28,13 +29,14 @@ public class PhotoCaptureManager : MonoBehaviour
     void OnEnable()
     {
         EnsureTargetRT();
+        FindCopyPass();
         if (rig != null) rig.OnShutter += HandleShutter;
     }
 
     void OnDisable()
     {
         if (rig != null) rig.OnShutter -= HandleShutter;
-        CopyColorAfterPost.ClearRequest();
+        if (copyPass != null) copyPass.ClearRequest();
         ReleaseTargetRT();
     }
 
@@ -43,9 +45,16 @@ public class PhotoCaptureManager : MonoBehaviour
         ReleaseTargetRT();
     }
 
+    void FindCopyPass()
+    {
+        if (copyPass != null) return;
+        copyPass = CopyColorAfterPost.FindInstance();
+        if (copyPass == null)
+            Debug.LogWarning("[PhotoCaptureManager] æ‰¾ä¸åˆ° CopyColorAfterPost CustomPassï¼Œè«‹ç¢ºèªå ´æ™¯ä¸­æœ‰ CustomPassVolumeï¼ˆInjection=After Post Processï¼‰ã€‚");
+    }
+
     void EnsureTargetRT()
     {
-        // ­Y¸ÑªR«×§ïÅÜ«h­««Ø
         int w = cam ? cam.pixelWidth : outputWidth;
         int h = cam ? cam.pixelHeight : outputHeight;
 
@@ -60,7 +69,6 @@ public class PhotoCaptureManager : MonoBehaviour
         }
         if (targetRT != null) return;
 
-        // Ãö±¼°ÊºAÁY©ñ¡A©ú½T«Ø 2D ¯¾²z¡AÁ×§K«Ø¦¨ XR Array
         targetRT = RTHandles.Alloc(
             width: Mathf.Max(1, w),
             height: Mathf.Max(1, h),
@@ -83,24 +91,28 @@ public class PhotoCaptureManager : MonoBehaviour
 
     void HandleShutter()
     {
+        FindCopyPass();
+        if (copyPass == null) return;
+
         EnsureTargetRT();
         if (targetRT == null) return;
 
-        // ©T©w¨Ï¥Î¤U¤@´VÂ^¨ú¡A»Pµe­±©Ò¨£¤@­P
-        CopyColorAfterPost.RequestCapture(targetRT, cam, captureNextFrame: true);
+        copyPass.RequestCapture(targetRT, cam, captureNextFrame: true);
         StartCoroutine(Readback());
     }
 
     IEnumerator Readback()
     {
-        int waitFrame = Time.frameCount + 1; // §A¥Ø«e©T©w©µ¤@´VÂ^¨ú
+        if (copyPass == null) yield break;
+
+        int waitFrame = Time.frameCount + 1;
         int timeoutFrame = waitFrame + 30;
 
-        while (CopyColorAfterPost.lastCapturedFrame < waitFrame)
+        while (copyPass.lastCapturedFrame < waitFrame)
         {
             if (Time.frameCount > timeoutFrame)
             {
-                Debug.LogError("[PhotoCaptureManager] Capture timeout. ½Ğ½T»{ CustomPassVolume ¬O§_¦s¦b¥B§@¥Î¦b¦P¤@¥x¬Û¾÷¡A¥H¤Î Injection=After Post Process¡C");
+                Debug.LogError("[PhotoCaptureManager] æ“·å–é€¾æ™‚ï¼Œè«‹ç¢ºèª CustomPassVolume å­˜åœ¨ä¸” Injection=After Post Processã€‚");
                 yield break;
             }
             yield return null;

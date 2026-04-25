@@ -119,6 +119,29 @@
 
 ---
 
+## 六之一、追焦目標選擇
+
+| 操作 | 按鍵 | 說明 |
+|------|------|------|
+| 下一台車 | `Tab` | 依名次排序切換至下一台 |
+| 上一台車 | `` ` `` (BackQuote) | 依名次排序切換至上一台 |
+
+> 車輛列表來自 `BikeAITrafficManager.RankedAgents`（依賽道位置排序）。
+
+---
+
+## 六之二、照片圖庫
+
+| 操作 | 按鍵 | 說明 |
+|------|------|------|
+| 開/關圖庫 | `F1` | 暫停遊戲，顯示滑鼠游標 |
+| 全螢幕檢視 | 點擊已選縮圖 | 進入全螢幕模式 |
+| 上/下一張 | `←` / `→` | 全螢幕模式中導覽 |
+| 返回縮圖 | `Esc` 或右鍵 | 從全螢幕返回 |
+| 刪除照片 | `Delete` | 刪除目前選取的照片 |
+
+---
+
 ## 七、觀景窗 Overlay
 
 由獨立組件 `ViewfinderOverlay` 負責繪製，掛在與 `TrackPhotoRig` 同一 GameObject 上。預設全部開啟，可在 Inspector 中個別關閉：
@@ -129,6 +152,7 @@
 | 中心十字 | 畫面中央標記 |
 | 水平線 | 畫面水平中線 |
 | 安全框 | 指定比例的安全構圖框（預設 2.39:1 寬銀幕） |
+| 對焦框 | 中央四角方括號，合焦時綠色、未合焦時紅色；框下顯示對焦距離 |
 | 反光鏡遮黑 | 快門觸發瞬間畫面變黑 |
 
 ---
@@ -149,14 +173,15 @@
 ```
 1. 按下快門（Enter / Space 連拍）
 2. TrackPhotoRig 觸發 OnShutter 事件
-3. PhotoCaptureManager 排程 CopyColorAfterPost
+3. PhotoCaptureManager 排程 CopyColorAfterPost（實例方法）
 4. 下一幀：CustomPass blit 後處理結果 → RTHandle
 5. AsyncGPUReadback 讀回 CPU
 6. 生成 Texture2D
 7. PhotoPrintSpawner 在世界空間生成照片 Quad
+8. PhotoGallery 儲存照片副本 + PhotoScoreEvaluator 計算評分
 ```
 
-> 一次只能有一張擷取在排程中。連拍過程中由反光鏡遮黑間隔（blackoutSec）自然限制擷取頻率。
+> 連拍過程中由反光鏡遮黑間隔（blackoutSec）自然限制擷取頻率。
 
 ---
 
@@ -208,3 +233,5 @@
 | 日期 | 內容 |
 |------|------|
 | 2026-04-25 | 建立操作手冊，記錄所有按鍵綁定與參數說明 |
+| 2026-04-25 | 新增追焦目標選擇（Tab/BackQuote）、照片圖庫（F1）按鍵說明 |
+| 2026-04-25 | 新增對焦框 Overlay 說明、擷取管線更新（評分+圖庫） |
