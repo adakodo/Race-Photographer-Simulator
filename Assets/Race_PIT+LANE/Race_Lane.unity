@@ -10868,6 +10868,36 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 813722725}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &827833611 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4116437018315000835, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
+  m_PrefabInstance: {fileID: 1145829416}
+  m_PrefabAsset: {fileID: 0}
+--- !u!143 &827833613
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827833611}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1.8
+  m_Radius: 0.3
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!1 &830692874
 GameObject:
   m_ObjectHideFlags: 0
@@ -13987,7 +14017,7 @@ PrefabInstance:
       objectReference: {fileID: 157207113}
     - target: {fileID: 2086505772865178794, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       propertyPath: m_Iso
-      value: 151
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 4116437018315000835, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       propertyPath: m_Name
@@ -14037,6 +14067,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4116437018315000835, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 827833613}
     - targetCorrespondingSourceObject: {fileID: 1712032190650238427, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1145829421}
@@ -36994,5 +37027,5 @@ SceneRoots:
   - {fileID: 8894482568529589924}
   - {fileID: 1803137470}
   - {fileID: 1145829416}
-  - {fileID: 1115192361}
   - {fileID: 1882538315}
+  - {fileID: 1115192361}
