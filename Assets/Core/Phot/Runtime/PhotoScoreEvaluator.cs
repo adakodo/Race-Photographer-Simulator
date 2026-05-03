@@ -27,6 +27,9 @@ public class PhotoScoreEvaluator : MonoBehaviour
         public string timestamp;
     }
 
+    // 評分時暫存的最佳主體
+    Transform evaluatedSubject;
+
     void Reset()
     {
         if (!rig) rig = GetComponent<TrackPhotoRig>();
@@ -46,6 +49,15 @@ public class PhotoScoreEvaluator : MonoBehaviour
             timestamp = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
         };
 
+        // 從場上所有車輛中找出畫面中最佳主體
+        evaluatedSubject = FindBestSubjectInFrame();
+
+        if (evaluatedSubject == null)
+        {
+            score.total = 0f;
+            return score;
+        }
+
         score.composition = EvalComposition();
         score.exposure = EvalExposure();
         score.sharpness = EvalSharpness();
@@ -61,12 +73,43 @@ public class PhotoScoreEvaluator : MonoBehaviour
         return score;
     }
 
+    /// <summary>從場上所有車輛中找出在畫面內且最靠近中心的主體</summary>
+    Transform FindBestSubjectInFrame()
+    {
+        var mgr = BikeAITrafficManager.Instance;
+        if (mgr == null) return null;
+
+        var agents = mgr.RankedAgents;
+        if (agents == null || agents.Count == 0) return null;
+
+        Camera cam = rig.cam;
+        Transform best = null;
+        float bestScore = float.MaxValue;
+
+        for (int i = 0; i < agents.Count; i++)
+        {
+            Transform t = agents[i].transform;
+            Vector3 vp = cam.WorldToViewportPoint(t.position);
+
+            // 必須在相機前方且在畫面內
+            if (vp.z <= 0f) continue;
+            if (vp.x < 0f || vp.x > 1f || vp.y < 0f || vp.y > 1f) continue;
+
+            // 以距畫面中心的距離作為評比（越近越好）
+            float dist = Vector2.Distance(new Vector2(vp.x, vp.y), new Vector2(0.5f, 0.5f));
+            if (dist < bestScore)
+            {
+                bestScore = dist;
+                best = t;
+            }
+        }
+
+        return best;
+    }
+
     float EvalComposition()
     {
-        if (rig.subject == null) return 50f;
-
-        Vector3 sp = rig.cam.WorldToViewportPoint(rig.subject.position);
-        if (sp.z < 0f) return 0f;
+        Vector3 sp = rig.cam.WorldToViewportPoint(evaluatedSubject.position);
 
         float sx = Mathf.Clamp01(sp.x);
         float sy = Mathf.Clamp01(sp.y);
@@ -84,7 +127,7 @@ public class PhotoScoreEvaluator : MonoBehaviour
             if (d < bestDist) bestDist = d;
         }
 
-        // 距離三分點越近分數越高（滿分距離 < 0.05，0 分距離 > 0.5）
+        // 距離三分點越近分數越高
         float thirdsScore = Mathf.Lerp(100f, 60f, Mathf.Clamp01(bestDist / 0.15f));
 
         // 太靠邊緣扣分
@@ -93,23 +136,17 @@ public class PhotoScoreEvaluator : MonoBehaviour
         if (sx < margin || sx > 1f - margin) edgePenalty += 20f;
         if (sy < margin || sy > 1f - margin) edgePenalty += 20f;
 
-        // 主體不在畫面中
-        if (sp.x < 0f || sp.x > 1f || sp.y < 0f || sp.y > 1f)
-            return 0f;
-
         return Mathf.Clamp(thirdsScore - edgePenalty, 0f, 100f);
     }
 
     float EvalExposure()
     {
-        // ISO 過高的懲罰
         int iso = rig.GetISO();
         float isoPenalty = 0f;
         if (iso > 3200) isoPenalty = 30f;
         else if (iso > 1600) isoPenalty = 15f;
         else if (iso > 800) isoPenalty = 5f;
 
-        // 曝光補償偏離的懲罰
         float compPenalty = Mathf.Abs(rig.exposureCompEV) * 10f;
 
         return Mathf.Clamp(100f - isoPenalty - compPenalty, 0f, 100f);
@@ -117,21 +154,13 @@ public class PhotoScoreEvaluator : MonoBehaviour
 
     float EvalSharpness()
     {
-        if (rig.subject == null) return 70f;
-
-        float subDist = rig.GetSubjectDistance();
+        float subDist = Vector3.Distance(rig.cam.transform.position, evaluatedSubject.position);
         if (subDist <= 0f) return 50f;
-
-        // 主體角速度（近似）
-        Vector3 sp1 = rig.cam.WorldToViewportPoint(rig.subject.position);
-        float focalM = rig.focalLengthMm * 0.001f;
-        float angularSizeDeg = Mathf.Atan2(1f, subDist / focalM) * Mathf.Rad2Deg;
 
         // 快門速度 vs 焦距安全快門規則（1/焦距 mm）
         float safeShutter = 1f / Mathf.Max(rig.focalLengthMm, 1f);
         float shutterRatio = rig.shutterSpeedSec / safeShutter;
 
-        // 快門越快越銳利
         float score = 100f;
         if (shutterRatio > 4f) score -= 40f;
         else if (shutterRatio > 2f) score -= 20f;
@@ -146,19 +175,16 @@ public class PhotoScoreEvaluator : MonoBehaviour
 
     float EvalFocus()
     {
-        if (rig.IsFocusConfirmed()) return 100f;
-
-        float subDist = rig.GetSubjectDistance();
-        if (subDist < 0f) return 50f;
+        float subDist = Vector3.Distance(rig.cam.transform.position, evaluatedSubject.position);
+        if (subDist <= 0f) return 50f;
 
         float diff = Mathf.Abs(rig.focusDistanceM - subDist);
         float ratio = diff / Mathf.Max(subDist, 0.1f);
 
-        // 對焦誤差比例越小分數越高
-        if (ratio < 0.02f) return 90f;
-        if (ratio < 0.05f) return 70f;
-        if (ratio < 0.10f) return 50f;
-        if (ratio < 0.20f) return 30f;
+        if (ratio < 0.02f) return 100f;
+        if (ratio < 0.05f) return 85f;
+        if (ratio < 0.10f) return 60f;
+        if (ratio < 0.20f) return 35f;
         return 10f;
     }
 }

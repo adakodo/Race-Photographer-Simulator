@@ -18,6 +18,9 @@ GameObject:
   - component: {fileID: 1382611921278217548}
   - component: {fileID: 2743084830874002088}
   - component: {fileID: 6238406332570167890}
+  - component: {fileID: 8896226875332850168}
+  - component: {fileID: 2964535894894087076}
+  - component: {fileID: 6725002238963895044}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -34,7 +37,7 @@ Transform:
   m_GameObject: {fileID: 1712032190650238427}
   serializedVersion: 2
   m_LocalRotation: {x: 0.032448646, y: -0, z: -0, w: 0.99947345}
-  m_LocalPosition: {x: 0, y: 1.5, z: -4}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -359,15 +362,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rig: {fileID: 991974353668824679}
+  gallery: {fileID: 2964535894894087076}
   inputEnabled: 1
   mouseSensitivity: 1.6
   lookSmooth: 12
   lockCursor: 1
   moveSpeed: 8
-  accel: 20
-  decel: 20
   sprintMul: 3
   slowMul: 0.3
+  gravity: -15
+  jumpForce: 5
+  eyeHeight: 1.6
+  stepOffset: 0.3
+  flySpeed: 8
+  accel: 20
+  decel: 20
   focalMin: 18
   focalMax: 200
   focalStep: 2
@@ -385,8 +394,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rig: {fileID: 991974353668824679}
-  singleShotKey: 13
-  holdToggleKey: 32
+  viewfinder: {fileID: 6238406332570167890}
+  photoHUD: {fileID: 7668551654961335896}
+  gallery: {fileID: 2964535894894087076}
+  firstPersonFOV: 70
   shutterDownKey: 91
   shutterUpKey: 93
   apertureDownKey: 59
@@ -397,13 +408,6 @@ MonoBehaviour:
   ecUpKey: 46
   ndDownKey: 110
   ndUpKey: 109
-  afToggleKey: 114
-  focusNearKey: 102
-  focusFarKey: 103
-  driveCycleKey: 118
-  panAssistToggleKey: 112
-  rollingToggleKey: 116
-  shakeToggleKey: 104
   lensAKey: 49
   lensBKey: 50
   shutterStepEV: 0.33333334
@@ -413,6 +417,7 @@ MonoBehaviour:
   ndStep: 0.3
   focusStepMeters: 0.5
   focalStepMm: 5
+  focusRayMaxDist: 500
 --- !u!114 &1382611921278217548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,6 +473,69 @@ MonoBehaviour:
   safeFrameAspect: 2.39
   overlayThickness: 2
   overlayColor: {r: 1, g: 1, b: 1, a: 0.8}
+  focusBracket: 1
+  bracketSize: 40
+  bracketCorner: 10
+  focusConfirmColor: {r: 0, g: 1, b: 0, a: 0.9}
+  focusNotConfirmColor: {r: 1, g: 0, b: 0, a: 0.6}
+  showFocusDistance: 1
+--- !u!114 &8896226875332850168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712032190650238427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62e1fbc60fa6f0d49adc3e4e1a3569a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rig: {fileID: 991974353668824679}
+  compositionWeight: 0.3
+  exposureWeight: 0.25
+  sharpnessWeight: 0.25
+  focusWeight: 0.2
+--- !u!114 &2964535894894087076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712032190650238427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f159f346e38237a4b85604b2c1e7ce40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  capture: {fileID: 2743084830874002088}
+  scorer: {fileID: 8896226875332850168}
+  toggleKey: 282
+  deleteKey: 127
+  thumbsPerRow: 5
+  thumbSize: 160
+  padding: 8
+  bgColor: {r: 0, g: 0, b: 0, a: 0.85}
+  selectedColor: {r: 1, g: 0.8, b: 0, a: 0.8}
+--- !u!114 &6725002238963895044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712032190650238427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c078481eaf4ebc4ba507cf78a0a2b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  capture: {fileID: 2743084830874002088}
+  scorer: {fileID: 8896226875332850168}
+  displayDuration: 3
+  fadeOutDuration: 0.5
+  thumbWidth: 200
+  margin: 16
+  scoreBarHeight: 24
 --- !u!1 &4116437018315000835
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +545,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4444956660027527431}
+  - component: {fileID: 525487630122531603}
   m_Layer: 0
   m_Name: PF_PhotographyRig
   m_TagString: Untagged
@@ -503,6 +572,31 @@ Transform:
   - {fileID: 659046610643998935}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &525487630122531603
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4116437018315000835}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1.8
+  m_Radius: 0.3
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!1 &4140167074249137339
 GameObject:
   m_ObjectHideFlags: 0
@@ -584,7 +678,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &659046610643998935
 Transform:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using UnityEngine;
 public class PhotoFreeCam : MonoBehaviour
 {
     public TrackPhotoRig rig;
+    public PhotoGallery gallery;
     public bool inputEnabled = true;
 
     [Header("Look")]
@@ -18,6 +19,7 @@ public class PhotoFreeCam : MonoBehaviour
 
     [Header("Ground Mode")]
     public float gravity = -15f;
+    public float jumpForce = 5f;
     public float eyeHeight = 1.6f;
     public float stepOffset = 0.3f;
 
@@ -78,6 +80,7 @@ public class PhotoFreeCam : MonoBehaviour
     void Update()
     {
         if (!inputEnabled) { TryResumePanAssist(); return; }
+        if (gallery != null && gallery.IsOpen) return;
 
         HandleLook();
 
@@ -134,10 +137,13 @@ public class PhotoFreeCam : MonoBehaviour
 
         Vector3 horizontal = wish.normalized * moveSpeed * mul;
 
-        // 重力
+        // 重力與跳躍
         grounded = cc.isGrounded;
         if (grounded && verticalVelocity < 0f)
             verticalVelocity = -2f;
+
+        if (grounded && Input.GetKeyDown(KeyCode.Space))
+            verticalVelocity = jumpForce;
 
         verticalVelocity += gravity * Time.deltaTime;
 

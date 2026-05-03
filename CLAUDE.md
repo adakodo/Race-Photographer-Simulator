@@ -32,6 +32,7 @@ A Unity 6 (6000.0.38f1) game simulating a race track photographer. The player co
 ## Coding Principles
 
 - **註解語言**：所有 C# 程式碼內的註解一律使用繁體中文。
+- **對話語言**：與使用者對話時，過程中的說明與回覆一律使用繁體中文。
 - **功能完成後提供測試步驟**：每完成一項功能或修改，必須在回覆中附上具體的 Unity Editor 操作步驟，說明如何驗證該功能正常運作。
 
 ## Unity Compile and Build Validation

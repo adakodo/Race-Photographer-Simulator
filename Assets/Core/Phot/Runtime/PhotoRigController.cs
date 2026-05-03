@@ -4,9 +4,14 @@ public class PhotoRigController : MonoBehaviour
 {
     public TrackPhotoRig rig;
 
+    [Header("模式切換")]
+    public ViewfinderOverlay viewfinder;
+    public TrackPhotoHUD photoHUD;
+    public PhotoGallery gallery;
+    [Tooltip("第一人稱模式的固定視野角度")]
+    public float firstPersonFOV = 70f;
+
     [Header("Keys")]
-    public KeyCode singleShotKey = KeyCode.Return;
-    public KeyCode holdToggleKey = KeyCode.Space;
     public KeyCode shutterDownKey = KeyCode.LeftBracket;
     public KeyCode shutterUpKey = KeyCode.RightBracket;
     public KeyCode apertureDownKey = KeyCode.Semicolon;
@@ -17,17 +22,8 @@ public class PhotoRigController : MonoBehaviour
     public KeyCode ecUpKey = KeyCode.Period;
     public KeyCode ndDownKey = KeyCode.N;
     public KeyCode ndUpKey = KeyCode.M;
-    public KeyCode afToggleKey = KeyCode.R;
-    public KeyCode focusNearKey = KeyCode.F;
-    public KeyCode focusFarKey = KeyCode.G;
-    public KeyCode driveCycleKey = KeyCode.V;
-    public KeyCode panAssistToggleKey = KeyCode.P;
-    public KeyCode rollingToggleKey = KeyCode.T;
-    public KeyCode shakeToggleKey = KeyCode.H;
     public KeyCode lensAKey = KeyCode.Alpha1;
     public KeyCode lensBKey = KeyCode.Alpha2;
-    public KeyCode subjectNextKey = KeyCode.Tab;
-    public KeyCode subjectPrevKey = KeyCode.BackQuote;
 
     [Header("Steps")]
     public float shutterStepEV = 1f / 3f;
@@ -38,8 +34,17 @@ public class PhotoRigController : MonoBehaviour
     public float focusStepMeters = 0.5f;
     public float focalStepMm = 5f;
 
+    [Header("半按對焦")]
+    [Tooltip("半按對焦的 Raycast 最大距離")]
+    public float focusRayMaxDist = 500f;
+
+    /// <summary>是否處於攝影模式</summary>
+    public bool CameraMode { get; private set; }
+
+    /// <summary>是否正在半按快門（對焦中）</summary>
+    public bool IsHalfPress { get; private set; }
+
     Camera _cam;
-    int subjectIndex = -1;
 
     void Reset()
     {
@@ -50,18 +55,39 @@ public class PhotoRigController : MonoBehaviour
     {
         if (!rig) rig = GetComponent<TrackPhotoRig>();
         _cam = GetComponent<Camera>();
+        SetCameraMode(false);
     }
 
     void Update()
     {
         if (!rig) return;
 
-        if (Input.GetKeyDown(singleShotKey)) rig.TakeOneShot();
+        // 圖庫開啟時不處理任何操作
+        if (gallery != null && gallery.IsOpen) return;
 
-        if (Input.GetKeyDown(holdToggleKey))
+        // 右鍵切換模式
+        if (Input.GetMouseButtonDown(1))
         {
-            if (!rig.HoldShutter) rig.StartHoldShutter();
-            else rig.StopHoldShutter();
+            SetCameraMode(!CameraMode);
+            return;
+        }
+
+        if (!CameraMode) return;
+
+        // 半按快門：按住左鍵 = 對焦，放開 = 拍照
+        if (Input.GetMouseButtonDown(0))
+        {
+            IsHalfPress = true;
+            HalfPressFocus();
+        }
+        if (Input.GetMouseButton(0) && IsHalfPress)
+        {
+            HalfPressFocus();
+        }
+        if (Input.GetMouseButtonUp(0) && IsHalfPress)
+        {
+            IsHalfPress = false;
+            rig.TakeOneShot();
         }
 
         if (Input.GetKeyDown(shutterDownKey)) AdjustShutter(-shutterStepEV);
@@ -79,34 +105,40 @@ public class PhotoRigController : MonoBehaviour
         if (Input.GetKeyDown(ndDownKey)) rig.SetNDStops(rig.ndStops - ndStep);
         if (Input.GetKeyDown(ndUpKey)) rig.SetNDStops(rig.ndStops + ndStep);
 
-        if (Input.GetKeyDown(afToggleKey)) rig.SetAFContinuous(!rig.afContinuous);
-        if (Input.GetKey(focusNearKey)) rig.ManualFocusAdjust(-focusStepMeters * Time.deltaTime * 6f);
-        if (Input.GetKey(focusFarKey)) rig.ManualFocusAdjust(focusStepMeters * Time.deltaTime * 6f);
-
-        if (Input.GetKeyDown(driveCycleKey)) CycleDrive();
-        if (Input.GetKeyDown(panAssistToggleKey)) rig.SetPanAssist(!rig.panAssist);
-        if (Input.GetKeyDown(rollingToggleKey)) rig.SetRollingShutter(!rig.rollingShutterApprox);
-        if (Input.GetKeyDown(shakeToggleKey)) rig.SetHandheldShake(!rig.handheldShake);
-
         if (Input.GetKeyDown(lensAKey)) rig.SwitchLens(rig.lensA, true);
         if (Input.GetKeyDown(lensBKey)) rig.SwitchLens(rig.lensB, true);
 
         if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.01f)
             rig.SetTargetFocal(rig.focalLengthMm + -Input.mouseScrollDelta.y * focalStepMm);
 
-        // 追焦目標切換
-        if (Input.GetKeyDown(subjectNextKey)) CycleSubject(1);
-        if (Input.GetKeyDown(subjectPrevKey)) CycleSubject(-1);
+    }
 
-        // Focus shortcuts
-        if (Input.GetMouseButtonDown(2))
+    void HalfPressFocus()
+    {
+        if (_cam == null) return;
+        Vector2 center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        rig.FocusAtScreenPoint(center, focusRayMaxDist);
+    }
+
+    void SetCameraMode(bool on)
+    {
+        CameraMode = on;
+        if (viewfinder != null) viewfinder.overlayEnabled = on;
+        if (photoHUD != null) photoHUD.showHUD = on;
+
+        if (rig != null)
         {
-            Vector2 center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-            rig.FocusAtScreenPoint(center);
+            rig.enabled = on;
+            rig.SetDOFActive(on);
+            // 停用 AF-C 和 Pan Assist，對焦完全靠半按快門
+            rig.SetAFContinuous(false);
+            rig.SetPanAssist(false);
         }
-        if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))
+
+        if (!on && _cam != null)
         {
-            rig.FocusAtScreenPoint(Input.mousePosition);
+            _cam.usePhysicalProperties = false;
+            _cam.fieldOfView = firstPersonFOV;
         }
     }
 
@@ -139,31 +171,6 @@ public class PhotoRigController : MonoBehaviour
             if (d < dbest) { dbest = d; best = table[i]; }
         }
         return best;
-    }
-
-    void CycleSubject(int dir)
-    {
-        var mgr = BikeAITrafficManager.Instance;
-        if (mgr == null) return;
-        var agents = mgr.RankedAgents;
-        if (agents == null || agents.Count == 0) return;
-
-        subjectIndex += dir;
-        if (subjectIndex < 0) subjectIndex = agents.Count - 1;
-        if (subjectIndex >= agents.Count) subjectIndex = 0;
-
-        rig.SetSubject(agents[subjectIndex].transform);
-    }
-
-    void CycleDrive()
-    {
-        switch (rig.driveMode)
-        {
-            case TrackPhotoRig.Drive.Single: rig.SetDriveMode(TrackPhotoRig.Drive.ContinuousLow); break;
-            case TrackPhotoRig.Drive.ContinuousLow: rig.SetDriveMode(TrackPhotoRig.Drive.ContinuousHigh); break;
-            case TrackPhotoRig.Drive.ContinuousHigh: rig.SetDriveMode(TrackPhotoRig.Drive.Custom); break;
-            default: rig.SetDriveMode(TrackPhotoRig.Drive.Single); break;
-        }
     }
 
 }

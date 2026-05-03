@@ -484,6 +484,11 @@ public class TrackPhotoRig : MonoBehaviour
 
     public void SetSubject(Transform t) { subject = t; hadLastPos = false; }
 
+    public void SetDOFActive(bool active)
+    {
+        if (dof != null) dof.active = active;
+    }
+
     // ── 曝光參數 API ──
     public void SetShutterSpeed(float sec)
     {
@@ -545,10 +550,23 @@ public class TrackPhotoRig : MonoBehaviour
         return Vector3.Distance(cam.transform.position, subject.position);
     }
 
+    /// <summary>取得畫面中央物體的距離（用於無 subject 時的合焦判斷）</summary>
+    public float GetCenterRayDistance(float maxDist = 500f)
+    {
+        if (cam == null) return -1f;
+        Ray r = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        if (Physics.Raycast(r, out var hit, maxDist, ~0, QueryTriggerInteraction.Ignore))
+            return hit.distance;
+        return -1f;
+    }
+
     public bool IsFocusConfirmed()
     {
+        // 優先使用 subject 距離，否則用中央 Raycast 距離
         float subDist = GetSubjectDistance();
+        if (subDist < 0f) subDist = GetCenterRayDistance();
         if (subDist < 0f) return false;
+
         float fM = focalLengthMm * 0.001f;
         float coc = 0.03f * 0.001f;
         float H = (fM * fM) / (apertureF * coc);

@@ -85,11 +85,9 @@ public class GameManager : MonoBehaviour
 
         photos.Clear();
         RemainingTime = levelConfig.timeLimit;
-        CurrentState = State.Countdown;
-        countdownTimer = levelConfig.countdownDuration;
-        CountdownValue = Mathf.Ceil(countdownTimer);
+        CurrentState = State.Playing;
         Time.timeScale = 1f;
-        SetInputEnabled(false);
+        SetInputEnabled(true);
     }
 
     public void RetryLevel()
@@ -114,17 +112,7 @@ public class GameManager : MonoBehaviour
 
     void UpdatePlaying()
     {
-        RemainingTime -= Time.deltaTime;
-
-        if (RemainingTime <= 0f)
-        {
-            RemainingTime = 0f;
-            CurrentState = State.TimeUp;
-            SetInputEnabled(false);
-
-            // 緩衝一幀讓最後一張照片完成擷取
-            Invoke(nameof(EnterSettlement), 1f);
-        }
+        // 目前無時間限制，自由拍攝
     }
 
     void EnterSettlement()
