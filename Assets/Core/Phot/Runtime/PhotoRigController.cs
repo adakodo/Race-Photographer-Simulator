@@ -12,26 +12,19 @@ public class PhotoRigController : MonoBehaviour
     public float firstPersonFOV = 70f;
 
     [Header("Keys")]
-    public KeyCode shutterDownKey = KeyCode.LeftBracket;
-    public KeyCode shutterUpKey = KeyCode.RightBracket;
-    public KeyCode apertureDownKey = KeyCode.Semicolon;
-    public KeyCode apertureUpKey = KeyCode.Quote;
-    public KeyCode isoDownKey = KeyCode.Minus;
-    public KeyCode isoUpKey = KeyCode.Equals;
-    public KeyCode ecDownKey = KeyCode.Comma;
-    public KeyCode ecUpKey = KeyCode.Period;
-    public KeyCode ndDownKey = KeyCode.N;
-    public KeyCode ndUpKey = KeyCode.M;
-    public KeyCode lensAKey = KeyCode.Alpha1;
-    public KeyCode lensBKey = KeyCode.Alpha2;
+    public KeyCode shutterDownKey = KeyCode.Alpha1;
+    public KeyCode shutterUpKey = KeyCode.Alpha2;
+    public KeyCode apertureDownKey = KeyCode.Alpha3;
+    public KeyCode apertureUpKey = KeyCode.Alpha4;
+    public KeyCode ecDownKey = KeyCode.Q;
+    public KeyCode ecUpKey = KeyCode.E;
+    public KeyCode lensAKey = KeyCode.F1;
+    public KeyCode lensBKey = KeyCode.F2;
 
     [Header("Steps")]
     public float shutterStepEV = 1f / 3f;
     public float apertureStepEV = 1f / 3f;
-    public float isoStepEV = 1f / 3f;
     public float exposureCompStep = 0.3f;
-    public float ndStep = 0.3f;
-    public float focusStepMeters = 0.5f;
     public float focalStepMm = 5f;
 
     [Header("半按對焦")]
@@ -96,14 +89,8 @@ public class PhotoRigController : MonoBehaviour
         if (Input.GetKeyDown(apertureDownKey)) AdjustAperture(+apertureStepEV);
         if (Input.GetKeyDown(apertureUpKey)) AdjustAperture(-apertureStepEV);
 
-        if (Input.GetKeyDown(isoDownKey)) AdjustISO(-isoStepEV);
-        if (Input.GetKeyDown(isoUpKey)) AdjustISO(+isoStepEV);
-
         if (Input.GetKeyDown(ecDownKey)) rig.SetExposureComp(rig.exposureCompEV - exposureCompStep);
         if (Input.GetKeyDown(ecUpKey)) rig.SetExposureComp(rig.exposureCompEV + exposureCompStep);
-
-        if (Input.GetKeyDown(ndDownKey)) rig.SetNDStops(rig.ndStops - ndStep);
-        if (Input.GetKeyDown(ndUpKey)) rig.SetNDStops(rig.ndStops + ndStep);
 
         if (Input.GetKeyDown(lensAKey)) rig.SwitchLens(rig.lensA, true);
         if (Input.GetKeyDown(lensBKey)) rig.SwitchLens(rig.lensB, true);
@@ -150,27 +137,6 @@ public class PhotoRigController : MonoBehaviour
     void AdjustAperture(float ev)
     {
         rig.SetAperture(rig.apertureF * Mathf.Pow(2f, ev * 0.5f));
-    }
-
-    void AdjustISO(float ev)
-    {
-        rig.shutterPriority = false;
-        int isoCur = Mathf.Max(1, rig.GetISO());
-        int isoNext = Mathf.Clamp(Mathf.RoundToInt(isoCur * Mathf.Pow(2f, ev)), Mathf.Max(50, rig.isoMin), rig.isoMax);
-        rig.SetISOManual(NearestISO(isoNext));
-    }
-
-    int NearestISO(int iso)
-    {
-        int[] table = { 100, 125, 160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400 };
-        int best = table[0];
-        int dbest = Mathf.Abs(iso - best);
-        for (int i = 1; i < table.Length; ++i)
-        {
-            int d = Mathf.Abs(iso - table[i]);
-            if (d < dbest) { dbest = d; best = table[i]; }
-        }
-        return best;
     }
 
 }

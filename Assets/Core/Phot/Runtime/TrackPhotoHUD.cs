@@ -6,11 +6,13 @@ public class TrackPhotoHUD : MonoBehaviour
     public bool showHUD = true;
 
     [Header("Style")]
-    public int fontSize = 24;
-    public float bottomBarHeight = 44f;
+    public int valueFontSize = 22;
+    public int labelFontSize = 11;
+    public float bottomBarHeight = 64f;
     public float sidePadding = 16f;
     public Color barColor = new Color(0f, 0f, 0f, 0.75f);
-    public Color textColor = Color.white;
+    public Color valueColor = Color.white;
+    public Color labelColor = new Color(1f, 1f, 1f, 0.5f);
 
     Texture2D _tex1x1;
     Texture2D Tex1x1()
@@ -36,30 +38,58 @@ public class TrackPhotoHUD : MonoBehaviour
         GUI.DrawTexture(bar, Tex1x1());
         GUI.color = oc;
 
-        GUIStyle style = new GUIStyle(GUI.skin.label);
-        style.fontSize = fontSize;
-        style.normal.textColor = textColor;
-
-        string sShutter = FormatShutter(rig.shutterSpeedSec);
-        string sAperture = "f/" + FormatAperture(rig.apertureF);
-        string sComp = FormatExposureComp(rig.exposureCompEV);
-        string sFocal = Mathf.RoundToInt(rig.focalLengthMm) + "mm";
-
         float w = bar.width / 4f;
 
-        Rect r1 = new Rect(bar.x + sidePadding, bar.y, w - sidePadding * 2f, bar.height);
-        Rect r2 = new Rect(bar.x + w, bar.y, w, bar.height);
-        Rect r3 = new Rect(bar.x + w * 2f, bar.y, w, bar.height);
-        Rect r4 = new Rect(bar.x + w * 3f, bar.y, w - sidePadding, bar.height);
+        DrawParam(new Rect(bar.x + sidePadding, bar.y, w - sidePadding, bar.height),
+            "快門速度", FormatShutter(rig.shutterSpeedSec), "1 / 2", TextAnchor.MiddleLeft);
 
-        GUIStyle left = new GUIStyle(style) { alignment = TextAnchor.MiddleLeft };
-        GUIStyle center = new GUIStyle(style) { alignment = TextAnchor.MiddleCenter };
-        GUIStyle right = new GUIStyle(style) { alignment = TextAnchor.MiddleRight };
+        DrawParam(new Rect(bar.x + w, bar.y, w, bar.height),
+            "光圈", "f/" + FormatAperture(rig.apertureF), "3 / 4", TextAnchor.MiddleCenter);
 
-        GUI.Label(r1, sShutter, left);
-        GUI.Label(r2, sAperture, center);
-        GUI.Label(r3, sComp, center);
-        GUI.Label(r4, sFocal, right);
+        DrawParam(new Rect(bar.x + w * 2f, bar.y, w, bar.height),
+            "曝光補償", FormatExposureComp(rig.exposureCompEV), "Q / E", TextAnchor.MiddleCenter);
+
+        DrawParam(new Rect(bar.x + w * 3f, bar.y, w - sidePadding, bar.height),
+            "焦距", Mathf.RoundToInt(rig.focalLengthMm) + "mm", "Scroll", TextAnchor.MiddleRight);
+    }
+
+    void DrawParam(Rect area, string label, string value, string key, TextAnchor align)
+    {
+        // 標籤（上方）
+        GUIStyle labelStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = labelFontSize,
+            alignment = align
+        };
+        labelStyle.normal.textColor = labelColor;
+
+        Rect labelRect = new Rect(area.x, area.y + 4f, area.width, 16f);
+        GUI.Label(labelRect, label, labelStyle);
+
+        // 數值（中間）
+        GUIStyle valueStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = valueFontSize,
+            alignment = align
+        };
+        valueStyle.normal.textColor = valueColor;
+
+        Rect valueRect = new Rect(area.x, area.y + 20f, area.width, 28f);
+        GUI.Label(valueRect, value, valueStyle);
+
+        // 按鍵提示（下方）
+        if (!string.IsNullOrEmpty(key))
+        {
+            GUIStyle keyStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = labelFontSize,
+                alignment = align
+            };
+            keyStyle.normal.textColor = new Color(1f, 0.9f, 0.3f, 0.6f);
+
+            Rect keyRect = new Rect(area.x, area.y + 48f, area.width, 16f);
+            GUI.Label(keyRect, key, keyStyle);
+        }
     }
 
     string FormatShutter(float sec)

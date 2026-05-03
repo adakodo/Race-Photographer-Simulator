@@ -151,9 +151,7 @@ public class ViewfinderOverlay : MonoBehaviour
         string[] lines = {
             "按住左鍵  對焦",
             "放開左鍵  拍照",
-            "Scroll    變焦",
-            "[ / ]     快門速度",
-            "1 / 2     切換鏡頭",
+            "F1 / F2   切換鏡頭",
             "右鍵      收起相機"
         };
 

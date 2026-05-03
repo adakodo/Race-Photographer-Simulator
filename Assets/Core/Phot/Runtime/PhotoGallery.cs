@@ -7,7 +7,7 @@ public class PhotoGallery : MonoBehaviour
     public PhotoScoreEvaluator scorer;
 
     [Header("Keys")]
-    public KeyCode toggleKey = KeyCode.F1;
+    public KeyCode toggleKey = KeyCode.Tab;
     public KeyCode deleteKey = KeyCode.Delete;
 
     [Header("Layout")]

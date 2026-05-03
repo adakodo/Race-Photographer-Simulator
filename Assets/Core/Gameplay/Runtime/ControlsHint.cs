@@ -6,7 +6,7 @@ public class ControlsHint : MonoBehaviour
 
     [Header("顯示設定")]
     public float showDuration = 12f;
-    public KeyCode toggleKey = KeyCode.F2;
+    public KeyCode toggleKey = KeyCode.F3;
 
     float hideTime;
     bool forceHidden;
@@ -64,7 +64,7 @@ public class ControlsHint : MonoBehaviour
     void DrawHints(float alpha)
     {
         float panelW = 280f;
-        float panelH = 330f;
+        float panelH = 250f;
         float x = 16f;
         float y = Screen.height - panelH - 60f;
 
@@ -108,13 +108,8 @@ public class ControlsHint : MonoBehaviour
         DrawEntry(lx, ly, panelW, lh, "Hold Left", "對焦 → 放開拍照", line); ly += lh;
         ly += 6;
 
-        DrawEntry(lx, ly, panelW, lh, "Scroll", "變焦（攝影模式）", line); ly += lh;
-        DrawEntry(lx, ly, panelW, lh, "1 / 2", "切換鏡頭", line); ly += lh;
-        DrawEntry(lx, ly, panelW, lh, "[ / ]", "快門速度", line); ly += lh;
-        ly += 6;
-
-        DrawEntry(lx, ly, panelW, lh, "F1", "照片圖庫", line); ly += lh;
-        DrawEntry(lx, ly, panelW, lh, "F2", "顯示/隱藏提示", dim); ly += lh;
+        DrawEntry(lx, ly, panelW, lh, "Tab", "照片圖庫", line); ly += lh;
+        DrawEntry(lx, ly, panelW, lh, "F3", "顯示/隱藏提示", dim); ly += lh;
     }
 
     void DrawEntry(float x, float y, float w, float h, string key, string desc, GUIStyle style)
