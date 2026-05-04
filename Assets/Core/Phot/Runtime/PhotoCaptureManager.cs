@@ -74,7 +74,7 @@ public class PhotoCaptureManager : MonoBehaviour
             height: Mathf.Max(1, h),
             slices: 1,
             dimension: UnityEngine.Rendering.TextureDimension.Tex2D,
-            colorFormat: GraphicsFormat.R8G8B8A8_UNorm,
+            colorFormat: GraphicsFormat.R8G8B8A8_SRGB,
             useDynamicScale: false,
             name: "PhotoCaptureRT_2D"
         );

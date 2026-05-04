@@ -132,6 +132,7 @@ public class TrackPhotoRig : MonoBehaviour
     Vector3 subjectVelWS;
     bool hadLastPos;
     int currentISO = 400;
+    bool meterInitialized;
 
     float nextShotTime = 0f;
     int burstCount = 0;
@@ -154,6 +155,7 @@ public class TrackPhotoRig : MonoBehaviour
         InitPhysicalCamera();
         if (!mainLight) mainLight = RenderSettings.sun;
         if (currentISO < isoMin) currentISO = Mathf.Clamp(400, Mathf.Max(50, isoMin), isoMax);
+        meterInitialized = false;
         hadLastPos = false;
         shakeSeed = UnityEngine.Random.value * 1000f;
         baseRot = transform.rotation;
@@ -330,10 +332,18 @@ public class TrackPhotoRig : MonoBehaviour
             isoNeeded = Mathf.RoundToInt(isoNeeded * Mathf.Pow(2f, ndStops));
 
 
-        // 5) 夾範圍與平滑
+        // 5) 夾範圍與平滑（首幀直接跳到正確值，避免 Build 啟動時亮度偏差）
         isoNeeded = Mathf.Clamp(isoNeeded, Mathf.Max(50, isoMin), isoMax);
         if (!shutterPriority) isoNeeded = Mathf.Clamp(currentISO, Mathf.Max(50, isoMin), isoMax);
-        currentISO = Mathf.RoundToInt(Mathf.Lerp(currentISO, isoNeeded, 1f - meterWeight));
+        if (!meterInitialized)
+        {
+            currentISO = isoNeeded;
+            meterInitialized = true;
+        }
+        else
+        {
+            currentISO = Mathf.RoundToInt(Mathf.Lerp(currentISO, isoNeeded, 1f - meterWeight));
+        }
 
 
         // 6) 寫回 Camera
