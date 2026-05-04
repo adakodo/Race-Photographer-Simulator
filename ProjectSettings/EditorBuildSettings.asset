@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Race_PIT+LANE/Race_Lane.unity
+    guid: dc014f51c8c5ab848a8fa9c31617899c
+  - enabled: 0
     path: Assets/Race_PIT+LANE/PIT_Box.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
   m_configObjects:
