@@ -13880,16 +13880,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 991974353668824679, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
+      propertyPath: isoMin
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 991974353668824679, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       propertyPath: mainLight
       value: 
       objectReference: {fileID: 157207113}
+    - target: {fileID: 991974353668824679, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
+      propertyPath: shutterSpeedSec
+      value: 0.002
+      objectReference: {fileID: 0}
     - target: {fileID: 2086505772865178794, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       propertyPath: m_Iso
-      value: 103
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2086505772865178794, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       propertyPath: m_Aperture
       value: 3.0869565
+      objectReference: {fileID: 0}
+    - target: {fileID: 2086505772865178794, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
+      propertyPath: m_ShutterSpeed
+      value: 0.002
       objectReference: {fileID: 0}
     - target: {fileID: 2964535894894087076, guid: 8b1d8684b99d39245bd34afc29f21755, type: 3}
       propertyPath: toggleKey

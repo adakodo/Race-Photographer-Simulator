@@ -62,7 +62,7 @@ public class TrackPhotoRig : MonoBehaviour
     public float sensorHeightMm = 24f;
     [Min(1f)] public float focalLengthMm = 50f;
     [Min(0.7f)] public float apertureF = 2.8f;
-    [Min(1f / 8000f)] public float shutterSpeedSec = 1f / 125f;
+    [Min(1f / 8000f)] public float shutterSpeedSec = 1f / 500f;
 
     [Header("AF-C")]
     public bool afContinuous = true;
@@ -81,7 +81,7 @@ public class TrackPhotoRig : MonoBehaviour
 
     [Header("Shutter Priority + Auto ISO")]
     public bool shutterPriority = true;
-    public int isoMin = 100;
+    public int isoMin = 50;
     public int isoMax = 6400;
     public float exposureCompEV = 0f;
     public bool meterFromMainLight = true;
