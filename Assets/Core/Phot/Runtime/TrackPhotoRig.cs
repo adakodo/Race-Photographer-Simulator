@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
-[ExecuteAlways]
 public class TrackPhotoRig : MonoBehaviour
 {
     #region Zoom Lenses
@@ -171,7 +170,7 @@ public class TrackPhotoRig : MonoBehaviour
         if (!cam) cam = GetComponent<Camera>();
         hdCam = cam ? cam.GetComponent<HDAdditionalCameraData>() : null;
         FetchOverrides();
-        ApplyAll();
+        if (Application.isPlaying) ApplyAll();
     }
 
     void FetchOverrides()
@@ -513,6 +512,20 @@ public class TrackPhotoRig : MonoBehaviour
     public void SetExposureComp(float ev)
     {
         exposureCompEV = ev;
+    }
+
+    /// <summary>切回自動曝光模式（第一人稱模式用）</summary>
+    public void ResetExposureToAuto()
+    {
+        if (exposure == null) FetchOverrides();
+        if (exposure != null)
+        {
+            exposure.active = true;
+            exposure.mode.overrideState = true;
+            exposure.mode.value = ExposureMode.Automatic;
+            exposure.compensation.overrideState = true;
+            exposure.compensation.value = 0f;
+        }
     }
 
     public void SetNDStops(float stops)

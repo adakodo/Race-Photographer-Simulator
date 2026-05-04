@@ -126,6 +126,7 @@ public class PhotoRigController : MonoBehaviour
         {
             _cam.usePhysicalProperties = false;
             _cam.fieldOfView = firstPersonFOV;
+            if (rig != null) rig.ResetExposureToAuto();
         }
     }
 
