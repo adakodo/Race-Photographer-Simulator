@@ -16,8 +16,8 @@ public class BikeAITrackAgent : MonoBehaviour
     [SerializeField] private BikeAIStrategy_Follow strategy;
 
     [Header("Speed")]
-    [SerializeField] private float startSpeed = 18f;
-    [SerializeField] private float maxSpeed = 40f;
+    [SerializeField] private float startSpeed = 9f;
+    [SerializeField] private float maxSpeed = 20f;
     [SerializeField] private float acceleration = 18f;
     [SerializeField] private float brakeAcceleration = 35f;
 
@@ -82,6 +82,10 @@ public class BikeAITrackAgent : MonoBehaviour
     /// <summary>平滑後的貼地 Y 值。</summary>
     private float smoothedGroundY;
 
+    // --- G-force 計算 ---
+    private Vector3 previousVelocityWS;
+    private Vector2 gForce;
+
     /// <summary>已完成的圈數（從 0 開始，通過起終點線時 +1）。</summary>
     private int currentLap;
     /// <summary>上一幀的 distanceOnTrack，用於偵測跨越起終點線。</summary>
@@ -100,6 +104,8 @@ public class BikeAITrackAgent : MonoBehaviour
     public float BikeWidth => bikeWidth;
     public OvertakeState CurrentOvertakeState => overtakeState;
     public BikeAITrackAgent OvertakeTarget => overtakeTarget;
+    /// <summary>當前 G-force：X = 側向（正=右），Y = 縱向（正=加速，負=煞車）。</summary>
+    public Vector2 GForce => gForce;
 
     /// <summary>已完成的圈數。</summary>
     public int CurrentLap => currentLap;
@@ -153,6 +159,7 @@ public class BikeAITrackAgent : MonoBehaviour
         }
 
         UpdateMovement(deltaTime);
+        UpdateGForce(deltaTime);
         UpdateTransform(deltaTime);
     }
 
@@ -214,6 +221,25 @@ public class BikeAITrackAgent : MonoBehaviour
         }
 
         distanceOnTrack = track.WrapDistance(distanceOnTrack);
+    }
+
+    /// <summary>
+    /// 用世界座標速度差分計算 G-force，投影到車體前方（縱向）與右方（側向）。
+    /// </summary>
+    private void UpdateGForce(float deltaTime)
+    {
+        if (track == null || !track.IsValid() || deltaTime < 1e-6f)
+            return;
+
+        TrackSplineProvider.TrackSample sample = track.GetSampleByDistance(distanceOnTrack);
+        Vector3 velocityWS = sample.forward * currentSpeed;
+        Vector3 accelWS = (velocityWS - previousVelocityWS) / deltaTime;
+        previousVelocityWS = velocityWS;
+
+        const float G = 9.80665f;
+        float lateral = Vector3.Dot(accelWS, sample.right) / G;
+        float longitudinal = Vector3.Dot(accelWS, sample.forward) / G;
+        gForce = Vector2.Lerp(gForce, new Vector2(lateral, longitudinal), 10f * deltaTime);
     }
 
     private void UpdateTransform(float deltaTime)

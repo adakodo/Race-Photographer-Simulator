@@ -4,13 +4,13 @@ using UnityEngine;
 public class BikeAIStrategy_Follow : MonoBehaviour
 {
     [Header("Base")]
-    [SerializeField] private float cruiseSpeed = 28f;
+    [SerializeField] private float cruiseSpeed = 14f;
     [SerializeField] private float defaultOffset = 0f;
 
     [Header("Follow")]
     [SerializeField] private float followDistance = 5f;
     [SerializeField] private float brakeDistance = 3f;
-    [SerializeField] private float minFollowSpeed = 8f;
+    [SerializeField] private float minFollowSpeed = 4f;
 
     [Header("Curve — 彎道速度控制")]
     [SerializeField] private float curveLookAhead = 12f;

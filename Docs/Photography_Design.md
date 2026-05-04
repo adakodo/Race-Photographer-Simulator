@@ -47,6 +47,11 @@ PhotoFreeCam（自由視角）
 TrackPhotoHUD（IMGUI）
   └── 底部狀態列：快門速度、光圈、曝光補償、焦距
 
+GForceMeterHUD（IMGUI）
+  ├── 讀取 TrackPhotoRig.subject 上的 BikeAITrackAgent.GForce
+  ├── 右下角圓形 G-ball：背景圓 + 同心圓刻度 + 十字線 + G 點 + 軌跡
+  └── 顯示總 G 值數字 + BRK/ACC 軸標籤
+
 PhotoCaptureManager（擷取管理）
   ├── 訂閱 OnShutter 事件
   ├── 管理 RTHandle 生命週期

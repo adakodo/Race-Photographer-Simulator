@@ -25,6 +25,7 @@ BikeAITrafficManager (singleton)
 BikeAITrackAgent (per-bike MonoBehaviour)
   ├── 移動狀態：distanceOnTrack, currentSpeed, currentOffset
   ├── 傾斜系統：曲率傾斜 + 換道傾斜
+  ├── G-force 計算：世界座標速度差分 → 側向/縱向 G 值（GForce 屬性）
   ├── LOD 節流（近/遠鏡頭更新頻率）
   └── strategy.Tick() 驅動決策
 
@@ -40,6 +41,13 @@ BikeAISpawner
   ├── 自動生成指定數量 AI 機車
   ├── 分配集團（packDistribution）
   └── 未來：網格起跑排位
+
+KerbGenerator ([ExecuteInEditMode], 賽道基礎設施)
+  ├── 沿 Spline 取樣曲率偵測彎道區段
+  ├── 在彎道內側賽道邊緣外生成紅白條紋 Kerb Mesh
+  ├── edgeOffset 調整對齊實際路面邊緣
+  ├── snapToGround Raycast 貼地
+  └── ContextMenu「生成路緣石」/「清除路緣石」
 ```
 
 ---

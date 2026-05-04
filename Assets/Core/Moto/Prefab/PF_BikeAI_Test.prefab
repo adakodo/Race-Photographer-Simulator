@@ -82,8 +82,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   track: {fileID: 0}
   strategy: {fileID: 5462289167107298916}
-  startSpeed: 30
-  maxSpeed: 70
+  startSpeed: 15
+  maxSpeed: 35
   acceleration: 15
   brakeAcceleration: 35
   currentOffset: 0
@@ -121,11 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55a7e4269b3798f4ea21b9341c9aa132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cruiseSpeed: 45
+  cruiseSpeed: 22.5
   defaultOffset: 0
   followDistance: 2.5
   brakeDistance: 1.5
-  minFollowSpeed: 15
+  minFollowSpeed: 7.5
   curveLookAhead: 15
   curveAngleForFullSlowdown: 45
   minCurveSpeedRatio: 0.55
