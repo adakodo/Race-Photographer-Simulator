@@ -290,19 +290,19 @@ PhotoGallery（照片瀏覽）
 
 ## 八、檔案對照表
 
-| 檔案 | 職責 |
-|------|------|
-| `Assets/Core/Phot/Runtime/TrackPhotoRig.cs` | 核心相機模擬（Physical Camera + AF + 曝光 + 效果） |
-| `Assets/Core/Phot/Runtime/PhotoRigController.cs` | 唯一鍵盤/滑鼠輸入層 → Rig 參數操作 |
-| `Assets/Core/Phot/Runtime/PhotoFreeCam.cs` | WASD + 滑鼠自由視角控制（不處理變焦） |
-| `Assets/Core/Phot/Runtime/TrackPhotoHUD.cs` | IMGUI 底部狀態列 |
-| `Assets/Core/Phot/Runtime/ViewfinderOverlay.cs` | 觀景窗 Overlay 繪製（從 TrackPhotoRig 拆分） |
-| `Assets/Core/Phot/Runtime/PhotoCaptureManager.cs` | 擷取流程管理（RTHandle + AsyncGPUReadback） |
-| `Assets/Core/Phot/Runtime/CopyColorAfterPost.cs` | HDRP CustomPass（After Post Process blit） |
-| `Assets/Core/Phot/Runtime/PhotoPrintSpawner.cs` | 世界空間照片 Quad 生成 |
-| `Assets/Core/Phot/Runtime/PhotoScoreEvaluator.cs` | 照片評分（構圖/曝光/銳利度/對焦） |
-| `Assets/Core/Phot/Runtime/PhotoGallery.cs` | 照片圖庫瀏覽（縮圖/全螢幕/EXIF/評分） |
-| `Assets/Core/Phot/Prefab/PF_PhotographyRig.prefab` | 完整攝影系統 Prefab |
+| 檔案                                                 | 職責                                       |
+| -------------------------------------------------- | ---------------------------------------- |
+| `Assets/Core/Phot/Runtime/TrackPhotoRig.cs`        | 核心相機模擬（Physical Camera + AF + 曝光 + 效果）   |
+| `Assets/Core/Phot/Runtime/PhotoRigController.cs`   | 唯一鍵盤/滑鼠輸入層 → Rig 參數操作                    |
+| `Assets/Core/Phot/Runtime/PhotoFreeCam.cs`         | WASD + 滑鼠自由視角控制（不處理變焦）                   |
+| `Assets/Core/Phot/Runtime/TrackPhotoHUD.cs`        | IMGUI 底部狀態列                              |
+| `Assets/Core/Phot/Runtime/ViewfinderOverlay.cs`    | 觀景窗 Overlay 繪製（從 TrackPhotoRig 拆分）       |
+| `Assets/Core/Phot/Runtime/PhotoCaptureManager.cs`  | 擷取流程管理（RTHandle + AsyncGPUReadback）      |
+| `Assets/Core/Phot/Runtime/CopyColorAfterPost.cs`   | HDRP CustomPass（After Post Process blit） |
+| `Assets/Core/Phot/Runtime/PhotoPrintSpawner.cs`    | 世界空間照片 Quad 生成                           |
+| `Assets/Core/Phot/Runtime/PhotoScoreEvaluator.cs`  | 照片評分（構圖/曝光/銳利度/對焦）                       |
+| `Assets/Core/Phot/Runtime/PhotoGallery.cs`         | 照片圖庫瀏覽（縮圖/全螢幕/EXIF/評分）                   |
+| `Assets/Core/Phot/Prefab/PF_PhotographyRig.prefab` | 完整攝影系統 Prefab                            |
 
 ---
 
